@@ -1353,4 +1353,123 @@
         font-size: 0.95rem;
         padding: 12px 15px;
     }
+}/* ====== BASE STYLES (unchanged) ====== */
+/* ... весь твой существующий CSS остаётся здесь ... */
+
+/* ====== Адаптивные сетки для карточек ====== */
+.products-section .products,
+.categories-section .categories,
+.certificates-section .certificates,
+.gallery-section .gallery {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
+
+/* ====== Универсальные отступы для секций ====== */
+.products-section,
+.categories-section,
+.certificates-section,
+.gallery-section {
+  padding: 2rem 1rem;
+}
+
+/* ====== Опциональные медиазапросы для мелких экранов ====== */
+@media (max-width: 480px) {
+  h2 {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .section-title {
+    margin-bottom: 1rem;
+  }
+}
+
+/* ====== MOBILE ADAPTATION ====== */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+    padding: 0;
+  }
+
+  .hero-section {
+    flex-direction: column;
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  .hero-section .content,
+  .hero-section .image {
+    width: 100%;
+    padding: 0;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 1rem;
+    display: none;
+    background-color: #fff;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  nav .burger {
+    display: block;
+    cursor: pointer;
+    padding: 1rem;
+  }
+
+  .products-section h2,
+  .categories-section h2,
+  .contact-section h2,
+  .certificates-section h2,
+  .about-section h2,
+  .gallery-section h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .contact-section form {
+    width: 100%;
+    padding: 0;
+  }
+
+  .about-section {
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+
+  .gallery-section .gallery img {
+    height: auto;
+    object-fit: cover;
+  }
+
+  footer {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ====== BURGER MENU SUPPORT ====== */
+nav .burger {
+  display: none;
+}
+
+/* Optional: JavaScript you’ll need in HTML to toggle the menu */
+/*
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const burger = document.querySelector(".burger");
+    const navMenu = document.querySelector("nav ul");
+
+    burger.addEventListener("click", () => {
+      navMenu.style.display = navMenu.style.display === "flex" ? "none" : "flex";
+    });
+  });
+</script>
+*/
+
+

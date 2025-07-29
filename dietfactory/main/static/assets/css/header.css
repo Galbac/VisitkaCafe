@@ -1,150 +1,444 @@
-/* Современная шапка в стиле FitAudit */
+/* --- Современная шапка в стиле FitAudit (Адаптированная для мобильных) --- */
 .site-header {
     background: #fff;
     box-shadow: 0 2px 16px rgba(44, 62, 80, 0.07);
     position: sticky;
     top: 0;
-    z-index: 100;
-    transition: box-shadow 0.3s;
+    z-index: 1000; /* Увеличен z-index */
+    transition: box-shadow 0.3s, transform 0.3s;
     min-height: 60px;
+    width: 100%;
 }
+
+/* Стили для "прилипшей" шапки при скролле */
+.site-header.scrolled {
+    transform: translateY(-100%);
+}
+
+.site-header.scrolled.visible {
+    transform: translateY(0);
+}
+
 .header-flex {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 32px;
-    min-height: 70px;
+    gap: 16px; /* Уменьшен gap */
+    min-height: 60px; /* Зафиксирована высота */
+    padding: 0 20px; /* Добавлен padding */
 }
+
+/* --- Логотип --- */
 .logo-block {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px; /* Уменьшен gap */
     text-decoration: none;
-    padding: 6px 0;
+    padding: 4px 0; /* Уменьшен padding */
+    flex-shrink: 0; /* Логотип не сжимается */
 }
+
 .logo-img {
-    height: 48px;
-    width: 48px;
-    border-radius: 16px;
+    height: 40px; /* Зафиксирован размер */
+    width: 40px;
+    border-radius: 12px; /* Сlightly уменьшена скругленность */
     background: #e8f5e9;
     box-shadow: 0 2px 8px rgba(46,204,113,0.08);
     transition: box-shadow 0.2s, transform 0.2s;
+    object-fit: cover; /* Если это изображение */
 }
+
 .logo-block:hover .logo-img {
     box-shadow: 0 4px 16px rgba(46,204,113,0.18);
     transform: scale(1.04);
 }
+
 .logo-title {
-    font-size: 1.7rem;
+    font-size: 1.5rem; /* Зафиксирован размер */
     font-weight: 900;
     color: #2ecc71;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px; /* Уменьшен letter-spacing */
     text-transform: uppercase;
     transition: color 0.2s;
+    white-space: nowrap; /* Предотвращает перенос названия */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px; /* Ограничиваем ширину на маленьких экранах */
 }
+
+/* --- Гамбургер-меню (Мобильное) --- */
+.mobile-menu-toggle {
+    display: none; /* Скрыто на больших экранах */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001; /* Выше, чем шапка */
+    flex-shrink: 0;
+}
+
+.mobile-menu-toggle span {
+    width: 100%;
+    height: 3px;
+    background: #2ecc71;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+    position: relative;
+}
+
+/* Анимация гамбургера в крестик */
+.mobile-menu-toggle.open span:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.mobile-menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.open span:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* --- Навигация --- */
 .main-nav {
     flex: 1;
     display: flex;
     justify-content: center;
 }
+
 .nav-list {
     display: flex;
-    gap: 32px;
+    gap: 24px; /* Уменьшен gap */
     list-style: none;
     margin: 0;
     padding: 0;
+    align-items: center; /* Центрируем элементы по вертикали */
 }
+
 .nav-list a {
     color: #34495e;
-    font-size: 1.1rem;
+    font-size: 1rem; /* Уменьшен размер шрифта */
     font-weight: 600;
     text-decoration: none;
-    padding: 8px 18px;
+    padding: 6px 14px; /* Уменьшен padding */
     border-radius: 8px;
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     position: relative;
+    white-space: nowrap; /* Предотвращает перенос текста ссылок */
 }
+
 .nav-list a:hover, .nav-list a:focus {
     background: #e8f5e9;
     color: #27ae60;
     box-shadow: 0 2px 8px rgba(46,204,113,0.08);
 }
+
+/* --- Поиск --- */
 .header-search {
     display: flex;
     align-items: center;
     background: #f8f9fa;
-    border-radius: 24px;
-    padding: 2px 10px 2px 16px;
+    border-radius: 20px; /* Уменьшена скругленность */
+    padding: 2px 8px 2px 14px; /* Уменьшен padding */
     box-shadow: 0 1px 4px rgba(44,62,80,0.04);
-    transition: box-shadow 0.2s;
+    transition: box-shadow 0.2s, background 0.2s;
+    flex-shrink: 0; /* Поле поиска не сжимается */
 }
+
+.header-search:hover, .header-search:focus-within {
+    background: #e8f5e9;
+    box-shadow: 0 2px 8px rgba(46,204,113,0.12);
+}
+
 .header-search input[type="search"] {
     border: none;
     background: transparent;
     outline: none;
-    font-size: 1rem;
-    padding: 8px 0;
-    width: 160px;
+    font-size: 0.95rem; /* Уменьшен размер шрифта */
+    padding: 6px 0; /* Уменьшен padding */
+    width: 140px; /* Уменьшена ширина */
     color: #222;
+    /* Убираем стандартные стили поискового поля в Safari/Webkit */
+    -webkit-appearance: textfield;
 }
+
+.header-search input[type="search"]::-webkit-search-cancel-button {
+    /* Стилизуем кнопку очистки в Webkit */
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Cpath d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E") no-repeat center;
+    cursor: pointer;
+}
+
 .header-search button {
     background: none;
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 6px 8px;
+    padding: 4px 6px; /* Уменьшен padding */
     display: flex;
     align-items: center;
     color: #27ae60;
     transition: color 0.2s;
+    border-radius: 50%; /* Круглая кнопка */
+    width: 32px; /* Фиксированная ширина */
+    height: 32px; /* Фиксированная высота */
+    justify-content: center;
 }
-.header-search button:hover {
+
+.header-search button:hover, .header-search button:focus {
     color: #219150;
+    background-color: rgba(39, 174, 96, 0.1);
 }
-@media (max-width: 900px) {
+
+/* --- Instagram --- */
+.header-insta {
+    color: #e1306c;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+    flex-shrink: 0; /* Не сжимается */
+    padding: 4px 8px; /* Добавлен padding для touch targets */
+    border-radius: 6px; /* Скругление для hover */
+}
+
+.header-insta:hover, .header-insta:focus {
+    color: #c13584;
+    background-color: rgba(225, 48, 108, 0.05); /* Легкий фон при наведении */
+    outline: none;
+}
+
+.insta-icon {
+    transition: transform 0.2s ease;
+}
+
+.header-insta:hover .insta-icon {
+    transform: scale(1.1);
+}
+
+.insta-text {
+    white-space: nowrap; /* Текст не переносится */
+}
+
+/* --- Адаптивность --- */
+
+/* Планшеты и небольшие ноутбуки */
+@media (max-width: 1024px) {
     .header-flex {
-        flex-direction: column;
-        gap: 12px;
-        min-height: 60px;
+        padding: 0 15px;
     }
-    .main-nav {
-        justify-content: flex-start;
-        width: 100%;
+    .logo-img {
+        height: 36px;
+        width: 36px;
+    }
+    .logo-title {
+        font-size: 1.3rem;
     }
     .nav-list {
         gap: 18px;
-        flex-wrap: wrap;
-        justify-content: center;
+    }
+    .nav-list a {
+        font-size: 0.95rem;
+        padding: 5px 12px;
     }
     .header-search input[type="search"] {
-        width: 110px;
+        width: 120px;
+        font-size: 0.9rem;
     }
-    .logo-img { height: 36px; width: 36px; }
-    .logo-title { font-size: 1.2rem; }
 }
-@media (max-width: 600px) {
+
+/* Мобильные устройства (меньше 768px) */
+@media (max-width: 767px) {
+    .site-header {
+        min-height: 50px; /* Еще меньше высота */
+    }
+
     .header-flex {
-        flex-direction: column;
-        gap: 8px;
-        min-height: 50px;
+        padding: 0 10px;
+        gap: 10px; /* Еще меньше gap */
     }
-    .logo-title { font-size: 1rem; }
-    .nav-list {
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: center;
+
+    /* Показываем кнопку гамбургера */
+    .mobile-menu-toggle {
+        display: flex;
     }
-    .header-search input[type="search"] {
-        width: 70px;
-        font-size: 0.9rem;
-    }
-    .logo-img { height: 28px; width: 28px; }
-}
-@media (max-width: 400px) {
-    .logo-title {
-        font-size: 0.9rem;
-    }
+
+    /* Скрываем основное меню навигации */
     .main-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Полупрозрачный оверлей */
+        display: none; /* Скрыто по умолчанию */
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-top: 50px; /* Отступ сверху под шапку */
+        z-index: 999; /* Ниже, чем кнопка гамбургера */
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .main-nav.show {
+        display: flex;
+        opacity: 1;
+    }
+
+    .nav-list {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        width: 80%; /* Ширина выпадающего меню */
+        max-width: 300px;
+        background: #fff;
+        padding: 20px 0;
+        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.2);
+        height: calc(100% - 50px); /* Высота минус высота шапки */
+        overflow-y: auto;
+        gap: 0; /* Убираем gap между пунктами */
+        border-radius: 0 0 16px 0;
+    }
+
+    .nav-list li {
+        width: 100%;
+        border-bottom: 1px solid #eee; /* Разделитель между пунктами */
+    }
+
+    .nav-list li:last-child {
+        border-bottom: none;
+    }
+
+    .nav-list a {
+        display: block;
+        padding: 15px 20px; /* Больше padding для пальцев */
+        font-size: 1.1rem;
+        color: #333;
+        text-align: left;
+        border-radius: 0;
+        transition: background 0.2s;
+    }
+
+    .nav-list a:hover, .nav-list a:focus {
+        background: #e8f5e9;
+        color: #27ae60;
+        box-shadow: none;
+    }
+
+    .logo-img {
+        height: 32px;
+        width: 32px;
+    }
+
+    .logo-title {
+        font-size: 1.2rem;
+        max-width: 200px; /* Еще меньше максимальная ширина */
+    }
+
+    .header-search {
+        padding: 2px 6px 2px 12px;
+    }
+
+    .header-search input[type="search"] {
+        width: 100px; /* Ещё меньше ширина */
         font-size: 0.9rem;
     }
-} 
+
+    .header-search button {
+        width: 28px;
+        height: 28px;
+        padding: 3px 5px;
+    }
+
+    .header-insta {
+        padding: 4px 6px;
+    }
+
+    .insta-text {
+        font-size: 0.9rem;
+    }
+}
+
+/* Очень маленькие экраны */
+@media (max-width: 480px) {
+    .header-flex {
+        padding: 0 8px;
+        gap: 6px;
+    }
+
+    .logo-img {
+        height: 28px;
+        width: 28px;
+    }
+
+    .logo-title {
+        font-size: 1rem;
+        max-width: 80px; /* Минимальная ширина */
+    }
+
+    .nav-list {
+        width: 90%;
+        max-width: none;
+        padding: 15px 0;
+        border-radius: 0;
+    }
+
+    .nav-list a {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    .header-search {
+        padding: 1px 5px 1px 10px;
+    }
+
+    .header-search input[type="search"] {
+        width: 80px; /* Минимальная ширина */
+        font-size: 0.85rem;
+    }
+
+    .header-search button {
+        width: 24px;
+        height: 24px;
+        padding: 2px 4px;
+    }
+
+    .mobile-menu-toggle {
+        width: 26px;
+        height: 26px;
+    }
+
+    .mobile-menu-toggle span {
+        height: 2px;
+    }
+
+    .mobile-menu-toggle.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .mobile-menu-toggle.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .header-insta {
+        padding: 3px 5px;
+    }
+
+    .insta-text {
+        font-size: 0.85rem;
+    }
+
+    .insta-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
