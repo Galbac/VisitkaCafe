@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Еда без вреда - Ваш помощник в вопросах питания{% endblock %}</title>
+    <meta name="description"
+          content="{% block description %}Правдивая информация о продуктах питания поможет похудеть, набрать мышечную массу, укрепить здоровье{% endblock %}">
+    <meta name="keywords"
+          content="{% block keywords %}питание, продукты, калории, диета, здоровье, еда без вреда{% endblock %}">
+    <!-- Подключение основных стилей -->
+    <link href="{% static 'assets/css/header.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/index.css' %}" rel="stylesheet">
+    <!-- Блок для дополнительных стилей на отдельных страницах -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% include 'main/partials/header.html' %}
+<main class="main-content">
+    {% block content %}{% endblock %}
+</main>
+{% include 'main/partials/footer.html' %}
+<button id="btnTop" title="Наверх">↑</button>
+<!-- Подключение основных скриптов -->
+<script src="{% static 'assets/js/main.js' %}"></script>
+<script src="{% static 'assets/js/index.js' %}"></script>
+<!-- Блок для дополнительных скриптов на отдельных страницах -->
+{% block extra_js %}{% endblock %}
+</body>
+</html>

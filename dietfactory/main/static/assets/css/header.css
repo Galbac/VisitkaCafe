@@ -1,0 +1,150 @@
+/* Современная шапка в стиле FitAudit */
+.site-header {
+    background: #fff;
+    box-shadow: 0 2px 16px rgba(44, 62, 80, 0.07);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: box-shadow 0.3s;
+    min-height: 60px;
+}
+.header-flex {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 70px;
+}
+.logo-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 6px 0;
+}
+.logo-img {
+    height: 48px;
+    width: 48px;
+    border-radius: 16px;
+    background: #e8f5e9;
+    box-shadow: 0 2px 8px rgba(46,204,113,0.08);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.logo-block:hover .logo-img {
+    box-shadow: 0 4px 16px rgba(46,204,113,0.18);
+    transform: scale(1.04);
+}
+.logo-title {
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #2ecc71;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+}
+.main-nav {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+.nav-list {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.nav-list a {
+    color: #34495e;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.nav-list a:hover, .nav-list a:focus {
+    background: #e8f5e9;
+    color: #27ae60;
+    box-shadow: 0 2px 8px rgba(46,204,113,0.08);
+}
+.header-search {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border-radius: 24px;
+    padding: 2px 10px 2px 16px;
+    box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+    transition: box-shadow 0.2s;
+}
+.header-search input[type="search"] {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 1rem;
+    padding: 8px 0;
+    width: 160px;
+    color: #222;
+}
+.header-search button {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    color: #27ae60;
+    transition: color 0.2s;
+}
+.header-search button:hover {
+    color: #219150;
+}
+@media (max-width: 900px) {
+    .header-flex {
+        flex-direction: column;
+        gap: 12px;
+        min-height: 60px;
+    }
+    .main-nav {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    .nav-list {
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .header-search input[type="search"] {
+        width: 110px;
+    }
+    .logo-img { height: 36px; width: 36px; }
+    .logo-title { font-size: 1.2rem; }
+}
+@media (max-width: 600px) {
+    .header-flex {
+        flex-direction: column;
+        gap: 8px;
+        min-height: 50px;
+    }
+    .logo-title { font-size: 1rem; }
+    .nav-list {
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .header-search input[type="search"] {
+        width: 70px;
+        font-size: 0.9rem;
+    }
+    .logo-img { height: 28px; width: 28px; }
+}
+@media (max-width: 400px) {
+    .logo-title {
+        font-size: 0.9rem;
+    }
+    .main-nav {
+        font-size: 0.9rem;
+    }
+} 

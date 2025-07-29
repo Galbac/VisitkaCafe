@@ -1,0 +1,540 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if certificates %}
+<section class="certificates-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="cert-title">Сертификаты качества</h2>
+            <div class="section-divider"></div>
+            <p class="cert-subtitle">Мы гордимся высокими стандартами, которым соответствует вся наша продукция</p>
+        </div>
+        <div class="cert-list">
+            {% for cert in certificates %}
+            <div class="cert-item">
+                <div class="cert-image-wrapper">
+                    {% if cert.image %}
+                    <img src="{{ cert.image.url }}" alt="{{ cert.name }}" class="cert-img">
+                    {% else %}
+                    <!-- Можно добавить заглушку, если изображение отсутствует -->
+                    <div class="cert-img-placeholder">
+                        <span class="placeholder-icon">📄</span>
+                    </div>
+                    {% endif %}
+                    <div class="cert-overlay">
+                        <span class="cert-overlay-icon">🔍</span>
+                    </div>
+                </div>
+                <h3 class="cert-name">{{ cert.name }}</h3>
+                <p class="cert-desc">{{ cert.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cert-intro">
+            <p>
+                Каждый сертификат подтверждает наше стремление к высочайшему качеству и безопасности. Мы строго
+                соблюдаем все нормы и стандарты, чтобы вы могли быть уверены в том, что едите.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Модальное окно для увеличенного изображения -->
+<div id="imgModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <button class="modal-nav modal-prev" aria-label="Предыдущее изображение">&#10094;</button>
+        <img class="modal-img" id="modalImg" src="" alt="">
+        <button class="modal-nav modal-next" aria-label="Следующее изображение">&#10095;</button>
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+</div>
+{%endif%}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* --- Секция сертификатов --- */
+    .certificates-section {
+        padding: 80px 0;
+        background: linear-gradient(to bottom, #ffffff, #f0f9f0); /* Очень легкий градиент */
+        position: relative;
+        overflow: hidden;
+    }
+
+    .certificates-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #2ecc71, #27ae60, #3498db);
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .cert-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        letter-spacing: -0.5px;
+    }
+
+    .section-divider {
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, #2ecc71, #27ae60);
+        margin: 0 auto 20px;
+        border-radius: 2px;
+    }
+
+    .cert-subtitle {
+        font-size: 1.2rem;
+        color: #7f8c8d;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* --- Список сертификатов --- */
+    .cert-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 35px;
+        margin-bottom: 50px;
+    }
+
+    /* --- Карточка сертификата --- */
+    .cert-item {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .cert-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(39, 174, 96, 0.15);
+    }
+
+    /* --- Обертка изображения --- */
+    .cert-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .cert-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .cert-item:hover .cert-img {
+        transform: scale(1.05);
+    }
+
+    /* --- Оверлей на изображении --- */
+    .cert-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(46, 204, 113, 0.85); /* Зеленый оверлей */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .cert-item:hover .cert-overlay {
+        opacity: 1;
+    }
+
+    .cert-overlay-icon {
+        font-size: 3rem;
+        color: white;
+        opacity: 0.9;
+    }
+
+    /* --- Информация о сертификате --- */
+    .cert-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 20px 20px 10px;
+        text-align: center;
+    }
+
+    .cert-desc {
+        font-size: 0.95rem;
+        color: #7f8c8d;
+        line-height: 1.6;
+        margin: 0 20px 20px;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    /* --- Вступительный текст --- */
+    .cert-intro {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 30px;
+        background: #e8f5e9; /* Очень светлый зеленый */
+        border-radius: 12px;
+        border-left: 4px solid #2ecc71;
+        border-right: 4px solid #2ecc71;
+    }
+
+    .cert-intro p {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        line-height: 1.7;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    /* --- Модальное окно --- */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1001; /* Выше, чем у других элементов */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal.show {
+        opacity: 1;
+    }
+
+    .modal-content {
+        position: relative;
+        background-color: transparent;
+        margin: auto;
+        padding: 0;
+        width: 90%;
+        max-width: 1000px;
+        top: 50%;
+        transform: translateY(-50%) scale(0.8);
+        transition: transform 0.3s ease;
+    }
+
+    .modal.show .modal-content {
+        transform: translateY(-50%) scale(1);
+    }
+
+    .modal-img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+
+    .modal-caption {
+        margin-top: 15px;
+        text-align: center;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: -40px;
+        right: 10px;
+        color: #aaa;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+        line-height: 1;
+    }
+
+    .modal-close:hover,
+    .modal-close:focus {
+        color: #fff;
+    }
+
+    /* --- Навигация в модальном окне --- */
+    .modal-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        font-size: 30px;
+        padding: 15px 20px;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-nav:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .modal-prev {
+        left: 15px;
+    }
+
+    .modal-next {
+        right: 15px;
+    }
+
+    /* --- Адаптивность --- */
+    @media (max-width: 992px) {
+        .cert-title {
+            font-size: 2.2rem;
+        }
+
+        .cert-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .cert-list {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .cert-name {
+            font-size: 1.3rem;
+        }
+
+        .cert-intro {
+            padding: 20px 15px;
+        }
+
+        .cert-intro p {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .certificates-section {
+            padding: 60px 0;
+        }
+
+        .cert-title {
+            font-size: 2rem;
+        }
+
+        .cert-subtitle {
+            font-size: 1rem;
+        }
+
+        .cert-list {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .cert-img {
+            height: 200px;
+        }
+
+        .cert-name {
+            font-size: 1.2rem;
+            margin: 15px 15px 8px;
+        }
+
+        .cert-desc {
+            font-size: 0.9rem;
+            margin: 0 15px 15px;
+        }
+
+        .modal-nav {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            padding: 10px 15px;
+        }
+
+        .modal-prev {
+            left: 10px;
+        }
+
+        .modal-next {
+            right: 10px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .certificates-section {
+            padding: 50px 0;
+        }
+
+        .cert-title {
+            font-size: 1.8rem;
+        }
+
+        .section-divider {
+            width: 60px;
+            height: 3px;
+        }
+
+        .cert-subtitle {
+            font-size: 0.95rem;
+        }
+
+        .cert-list {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        .cert-img {
+            height: 220px;
+        }
+
+        .cert-name {
+            font-size: 1.25rem;
+        }
+
+        .cert-intro {
+            padding: 15px 10px;
+        }
+
+        .cert-intro p {
+            font-size: 0.95rem;
+        }
+
+        .modal-content {
+            width: 95%;
+        }
+
+        .modal-close {
+            top: -35px;
+            font-size: 35px;
+        }
+
+        .modal-nav {
+            width: 45px;
+            height: 45px;
+            font-size: 20px;
+            padding: 8px 12px;
+        }
+
+        .modal-caption {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const modal = document.getElementById("imgModal");
+        const modalImg = document.getElementById("modalImg");
+        const modalCaption = document.getElementById("modalCaption");
+        const closeBtn = modal.querySelector(".modal-close");
+        const prevBtn = modal.querySelector(".modal-prev");
+        const nextBtn = modal.querySelector(".modal-next");
+
+        const certItems = Array.from(document.querySelectorAll(".cert-item"));
+        let currentIndex = 0;
+
+        function openModal(index) {
+            const item = certItems[index];
+            const img = item.querySelector(".cert-img");
+            const name = item.querySelector(".cert-name").textContent;
+            const desc = item.querySelector(".cert-desc").textContent;
+
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            modalCaption.textContent = `${name}: ${desc}`;
+            currentIndex = index;
+
+            // Используем таймер для плавного появления
+            modal.style.display = "block";
+            setTimeout(() => {
+                modal.classList.add("show");
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.remove("show");
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 300); // Должно совпадать с длительностью transition
+        }
+
+        // Открытие модального окна при клике на карточку
+        certItems.forEach((item, index) => {
+            const imgWrapper = item.querySelector(".cert-image-wrapper");
+            imgWrapper.addEventListener("click", () => {
+                openModal(index);
+            });
+        });
+
+        // Закрытие модального окна
+        closeBtn.addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Навигация стрелками
+        function navigate(direction) {
+            currentIndex += direction;
+            if (currentIndex < 0) {
+                currentIndex = certItems.length - 1;
+            } else if (currentIndex >= certItems.length) {
+                currentIndex = 0;
+            }
+            openModal(currentIndex);
+        }
+
+        prevBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            navigate(-1);
+        });
+
+        nextBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            navigate(1);
+        });
+
+        // Навигация клавишами
+        document.addEventListener("keydown", (e) => {
+            if (modal.classList.contains("show")) {
+                if (e.key === "Escape") {
+                    closeModal();
+                } else if (e.key === "ArrowLeft") {
+                    navigate(-1);
+                } else if (e.key === "ArrowRight") {
+                    navigate(1);
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

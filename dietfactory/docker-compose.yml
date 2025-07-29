@@ -1,0 +1,71 @@
+services:
+  db:
+    image: postgres
+    container_name: business_postgres_db
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    networks:
+      - db_network
+
+  web:
+    build: .
+    container_name: business_web
+    restart: always
+    command: >
+      sh -c "
+              python manage.py migrate --noinput &&
+              python manage.py collectstatic --noinput &&
+              gunicorn --bind 0.0.0.0:8000 dietfactory.wsgi:application
+            "
+    volumes:
+      - ./media:/app/media
+      - static_volume:/app/staticfiles
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - db_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: business_nginx
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static_volume:/app/staticfiles
+      - ./media:/app/media
+    depends_on:
+      - web
+    networks:
+      - db_network
+
+  adminer:
+    image: adminer
+    container_name: business_adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - db_network
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  db_network:
+    driver: bridge

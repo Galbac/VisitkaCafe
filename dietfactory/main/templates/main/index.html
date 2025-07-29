@@ -1,0 +1,247 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Еда без вреда — Ваш помощник в вопросах питания{% endblock %}
+
+{% block description %}Правдивая информация о продуктах питания поможет похудеть, набрать мышечную массу, укрепить здоровье, стать активным и жизнерадостным человеком{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+
+<section class="hero-section">
+    <div class="container hero-flex">
+        <div class="hero-text">
+            <div class="hero-badge">Новое производство 2025</div>
+            <h1 class="hero-title">Еда без вреда <span class="hero-title-leaf">🍃</span></h1>
+            <p class="hero-sub">Ваш проводник в мир осознанного питания</p>
+            <p class="hero-desc">Откройте для себя вкусную, полезную еду без сахара, глютена и ГМО. Мы производим блюда,
+                которые укрепляют здоровье, заряжают энергией и делают каждый день ярче.</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">0%</span>
+                    <span class="stat-label">Вредных добавок</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Натуральность</span>
+                </div>
+            </div>
+            <div class="hero-btns">
+                <a href="/products/" class="hero-cta">Выбрать полезное</a>
+                <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" class="hero-insta">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5"/>
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                        <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
+                    </svg>
+                    Instagram
+                </a>
+            </div>
+        </div>
+        <div class="hero-img">
+            <div class="hero-img-container">
+                <img src="{% static 'assets/img/logo.svg' %}" alt="Еда без вреда"
+                     class="hero-logo">
+                <!-- Добавим декоративные элементы -->
+                <div class="hero-decor-circle"></div>
+                <div class="hero-decor-leaf leaf-1">🌿</div>
+                <div class="hero-decor-leaf leaf-2">🥗</div>
+                <div class="hero-decor-leaf leaf-3">🥑</div>
+            </div>
+        </div>
+    </div>
+    <svg class="hero-wave" viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 0h1440v80c-240 40-480 40-720 0S240 40 0 80V0z" fill="#e8f5e9"/>
+    </svg>
+</section>
+
+<!-- О нас -->
+
+<section class="about-section">
+    <div class="container">
+        <div class="about-header">
+            <div class="about-icon" style="text-align:center;margin-bottom:18px;">
+                <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+                    <circle cx="30" cy="30" r="30" fill="#e8f5e9"/>
+                    <path d="M20 40c0-6 8-6 8-12V18a2 2 0 1 1 4 0v10c0 6 8 6 8 12" stroke="#2ecc71" stroke-width="2"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="30" cy="44" r="2" fill="#27ae60"/>
+                </svg>
+            </div>
+            <h2 class="about-title">Еда без вреда <span class="about-title-leaf">🍃</span></h2>
+        </div>
+
+        <div class="about-content">
+            <p class="about-desc">
+                Мы приветствуем вас в нашем обновлённом проекте, который посвящён здоровому питанию! Как гласит мудрость
+                Гиппократа: <span class="about-quote">«Мы есть то, что мы едим»</span>.
+            </p>
+
+            <p class="about-desc">
+                Многие знают нас как <a href="https://www.instagram.com/goodfood.bio/" target="_blank"
+                                        class="about-link">@goodfood.bio</a> — магазин правильного питания. Мы
+                развиваемся и идём вперёд! Теперь у нас есть собственное производство, где создаём еду, которая приносит
+                не просто отсутствие вреда, а максимальную пользу для вашего здоровья.
+            </p>
+
+            <div class="about-features">
+                <h3 class="features-title">Наши полуфабрикаты <span class="features-emphasis">не содержат</span>:</h3>
+                <ul class="features-list">
+                    <li class="feature-item"><span class="feature-cross">✖️</span> Сахар</li>
+                    <li class="feature-item"><span class="feature-cross">✖️</span> Лактозу</li>
+                    <li class="feature-item"><span class="feature-cross">✖️</span> Казеин</li>
+                    <li class="feature-item"><span class="feature-cross">✖️</span> Глютен</li>
+                    <li class="feature-item"><span class="feature-cross">✖️</span> ГМО</li>
+                </ul>
+            </div>
+
+            <div class="about-commitment">
+                <p class="commitment-text">
+                    Мы заботимся о вашем здоровье на каждом этапе. Всё наше производство, включая используемую посуду,
+                    <span class="commitment-highlight">полностью стерильно</span> <span
+                        class="commitment-leaf">♻️</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Галерея -->
+{% if gallery_images %}
+<section class="gallery-section">
+    <div class="container">
+        <h2 class="gallery-title">Галерея</h2>
+        <div class="gallery-grid">
+            {% for img in gallery_images %}
+            <div class="gallery-item">
+                <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:'Изображение из галереи' }}">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<!-- Модальное окно -->
+<div id="modal" class="modal" style="display:none;">
+    <span class="modal-close"
+          style="position:absolute; top:20px; right:30px; font-size:40px; cursor:pointer; color:#fff;">&times;</span>
+
+    <!-- Стрелки навигации -->
+    <a class="modal-prev"
+       style="position:absolute; top:50%; left:20px; font-size:60px; color:#fff; cursor:pointer; user-select:none; transform: translateY(-50%);">&#10094;</a>
+    <a class="modal-next"
+       style="position:absolute; top:50%; right:20px; font-size:60px; color:#fff; cursor:pointer; user-select:none; transform: translateY(-50%);">&#10095;</a>
+
+    <img class="modal-content" id="modal-img" style="max-width:90vw; max-height:90vh; margin:auto; display:block;">
+    <div id="modal-caption" style="text-align:center; color:#ccc; padding:10px 0;"></div>
+</div>
+{% endif %}
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Контакты</h2>
+            <div class="section-subtitle">Свяжитесь с нами удобным для вас способом</div>
+            <div class="section-divider"></div>
+        </div>
+
+        <!-- Карта Google Maps -->
+        <div class="map-container">
+            <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12041.96423254013!2d47.504682!3d42.984857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4040b5e0e54e229f%3A0x23a0dbb769ff3947!2z0JzQvtC70YzRiNCw0Y8sINCc0L7QsdCw0YDQvtCz0L4g0L_RgNC-0YHQv9C10LrRgiDQvtCx0LvQsNGB0YLRjCwg0KDQtdGB0L8u!5e0!3m2!1sru!2sru!4v1722070000000!5m2!1sru!2sru"
+                    width="100%" height="350"
+                    class="map-iframe"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    title="Наш адрес на карте Google Maps">
+            </iframe>
+        </div>
+
+        <div class="contact-content">
+            <!-- Левая колонка: Информация -->
+            <div class="contact-info-wrapper">
+                <h3 class="info-title">Местоположение</h3>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon-wrapper">
+                            <div class="contact-icon">📍</div>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-item-title">Адрес</h4>
+                            <p class="contact-item-text">Махачкала, Россия</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon-wrapper">
+                            <div class="contact-icon">🕒</div>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-item-title">Часы работы</h4>
+                            <p class="contact-item-text">Пн–Сб, время уточняется</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon-wrapper">
+                            <div class="contact-icon">📞</div>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-item-title">Телефон</h4>
+                            <p class="contact-item-text">
+                                <a href="https://wa.me/79634001323" class="contact-link">+7 (963) 400-13-23</a>
+                                <span class="whatsapp-badge">(WhatsApp)</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon-wrapper">
+                            <div class="contact-icon">📧</div>
+                        </div>
+                        <div class="contact-details">
+                            <h4 class="contact-item-title">Соцсети</h4>
+                            <p class="contact-item-text">
+                                <a href="https://www.instagram.com/eda__bez.vreda/" target="_blank" rel="noopener"
+                                   class="contact-link social-link">
+                                    <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor" viewBox="0 0 16 16">
+                                        <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.915 3.915 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.598-.92c-.11-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                                    </svg>
+                                    @eda__bez.vreda
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Правая колонка: Форма -->
+            <div class="contact-form-wrapper">
+                <h3 class="form-title">Напишите нам</h3>
+                <form id="contactForm" method="post" action="{% url 'contact_ajax' %}" class="styled-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" name="name" class="form-input" placeholder="Ваше имя" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-input" placeholder="Ваш email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="subject" class="form-input" placeholder="Тема сообщения" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" class="form-textarea" rows="5" placeholder="Ваше сообщение"
+                                  required></textarea>
+                    </div>
+                    <button type="submit" class="form-button">Отправить сообщение</button>
+                </form>
+                <!-- Область для сообщений формы -->
+                <div id="contactFormMsg" class="form-message" aria-live="polite"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
