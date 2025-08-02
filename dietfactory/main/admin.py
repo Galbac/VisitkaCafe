@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .models import Product, Certificate, GalleryImage
+from .models import Product, Certificate, GalleryImage, Review
 
 
 @admin.register(Product)
@@ -145,3 +145,21 @@ class GalleryImageAdmin(admin.ModelAdmin):
             )
         return "-"
     admin_image_tag.short_description = _('Превью изображения')
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_at', 'has_text', 'has_screenshot')
+    list_filter = ('created_at',)
+    search_fields = ('name', 'text')
+    readonly_fields = ('created_at',)
+
+    def has_text(self, obj):
+        return bool(obj.text)
+    has_text.boolean = True
+    has_text.short_description = "Есть текст"
+
+    def has_screenshot(self, obj):
+        return bool(obj.screenshot)
+    has_screenshot.boolean = True
+    has_screenshot.short_description = "Есть скриншот"

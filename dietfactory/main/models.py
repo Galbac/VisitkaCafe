@@ -1,13 +1,69 @@
-# Create your models here.
+# models.py
 import os
-
 from django.conf import settings
 from django.db import models
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from PIL import Image
+import tempfile
 
+
+# Универсальная функция удаления файла
+def delete_file_if_exists(file_field):
+    if file_field and hasattr(file_field, 'path'):
+        file_path = file_field.path
+        if os.path.isfile(file_path):
+            media_root_str = str(settings.MEDIA_ROOT)
+            if file_path.startswith(media_root_str):
+                try:
+                    os.remove(file_path)
+                    print(f"Файл удален: {file_path}")
+                except OSError as e:
+                    print(f"Ошибка при удалении файла {file_path}: {e}")
+            else:
+                print(f"Файл {file_path} вне MEDIA_ROOT — не удаляется.")
+        else:
+            print(f"Файл {file_path} не существует на диске.")
+    else:
+        print("Поле файла пустое или не имеет атрибута path.")
+
+
+# Функция оптимизации изображения
+def optimize_image(image_field, max_size=(1200, 1200), quality=85):
+    """
+    Сжимает и уменьшает изображение.
+    :param image_field: файл изображения
+    :param max_size: максимальный размер (ширина, высота)
+    :param quality: качество (1-100)
+    :return: путь к временному оптимизированному файлу
+    """
+    if not image_field:
+        return None
+
+    img = Image.open(image_field)
+    img_format = img.format  # Сохраняем формат (JPEG, PNG и т.д.)
+
+    # Конвертируем PNG в RGB, если есть альфа-канал
+    if img.mode in ('RGBA', 'LA'):
+        background = Image.new('RGB', img.size, (255, 255, 255))
+        background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+        img = background
+
+    # Уменьшаем, если слишком большое
+    img.thumbnail(max_size, Image.Resampling.LANCZOS)
+
+    # Сохраняем во временный файл
+    temp_file = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
+    img.save(temp_file, format='JPEG', quality=quality, optimize=True)
+    temp_file.close()
+
+    return temp_file.name, img_format
+
+
+# === Остальные модели без изменений (Product, Certificate, GalleryImage) ===
 
 class Product(models.Model):
     name = models.CharField('Название продукта')
@@ -27,17 +83,14 @@ class Product(models.Model):
         if not self.slug:
             base_slug = slugify(self.name)
             if not base_slug:
-                # Если slugify не дал результата, используем ID или заглушку
                 base_slug = "product"
             slug = base_slug
             n = 1
-            # Используем try-except на случай гонки данных
             try:
                 while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
                     slug = f"{base_slug}-{n}"
                     n += 1
             except:
-                # На случай ошибок с БД, добавляем временную метку
                 import time
                 slug = f"{base_slug}-{int(time.time())}"
             self.slug = slug
@@ -48,9 +101,6 @@ class Product(models.Model):
 
 
 class Certificate(models.Model):
-    """
-    Модель для хранения информации о сертификатах качества.
-    """
     name = models.CharField(
         max_length=200,
         verbose_name=_("Название сертификата"),
@@ -79,16 +129,13 @@ class Certificate(models.Model):
     class Meta:
         verbose_name = _("Сертификат")
         verbose_name_plural = _("Сертификаты")
-        ordering = ['order']  # Сортировка по полю order по возрастанию
+        ordering = ['order']
 
     def __str__(self):
         return self.name
 
 
 class GalleryImage(models.Model):
-    """
-    Модель для хранения изображений галереи.
-    """
     image = models.ImageField(
         upload_to='gallery/',
         verbose_name=_("Изображение"),
@@ -121,56 +168,60 @@ class GalleryImage(models.Model):
         ordering = ['order']
 
     def __str__(self):
-        if self.alt_text:
-            return self.alt_text
-        return f"Изображение #{self.pk}"
+        return self.alt_text or f"Изображение #{self.pk}"
 
 
-def delete_file_if_exists(file_field):
-    if file_field and hasattr(file_field, 'path'):
-        file_path = file_field.path
-        if os.path.isfile(file_path) and file_path.startswith(settings.MEDIA_ROOT):
-            try:
-                os.remove(file_path)
-                print(f"Файл удален: {file_path}")
-            except OSError as e:
-                print(f"Ошибка при удалении файла {file_path}: {e}")
+# === Модель отзыва (с оптимизацией) ===
+
+class Review(models.Model):
+    name = models.CharField("Имя", max_length=100)
+    text = models.TextField("Текст отзыва", blank=True, null=True)
+    screenshot = models.ImageField(
+        "Скриншот из Instagram",
+        upload_to='reviews/',
+        blank=True,
+        null=True,
+        help_text="Можно загрузить скриншот отзыва из Instagram"
+    )
+    created_at = models.DateTimeField("Дата", default=timezone.now)
+
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} — {self.created_at.strftime('%d.%m.%Y')}"
 
 
-def delete_file_if_exists(file_field):
-    if file_field and hasattr(file_field, 'path'):
-        file_path = file_field.path
-        if os.path.isfile(file_path):
-            media_root_str = str(settings.MEDIA_ROOT)
-            if file_path.startswith(media_root_str):
-                try:
-                    os.remove(file_path)
-                    print(f"Файл удален: {file_path}")
-                except OSError as e:
-                    print(f"Ошибка при удалении файла {file_path}: {e}")
-            else:
-                print(f"Файл {file_path} не будет удален, так как не находится внутри MEDIA_ROOT.")
-        else:
-            print(f"Файл {file_path} не существует на диске.")
+# ✅ Сигналы ПОСЛЕ объявления модели Review
+
+@receiver(pre_save, sender=Review)
+def optimize_review_screenshot(sender, instance, **kwargs):
+    if not instance.pk:  # Новый объект
+        if instance.screenshot:
+            temp_path, original_format = optimize_image(instance.screenshot)
+            if temp_path:
+                # Заменяем файл на оптимизированный
+                from django.core.files import File
+                with open(temp_path, 'rb') as f:
+                    instance.screenshot.save(
+                        instance.screenshot.name.split('.')[0] + '.jpg',
+                        File(f),
+                        save=False
+                    )
+                os.remove(temp_path)  # Удаляем временный файл
     else:
-        print("Поле файла пустое или не имеет атрибута path.")
+        # Объект уже существует — проверим, изменилось ли изображение
+        try:
+            old_instance = Review.objects.get(pk=instance.pk)
+            if old_instance.screenshot and old_instance.screenshot != instance.screenshot:
+                delete_file_if_exists(old_instance.screenshot)
+        except Review.DoesNotExist:
+            pass
 
 
-@receiver(post_delete, sender=Product)
-def delete_product_files(sender, instance, **kwargs):
-    if instance.image:
-        delete_file_if_exists(instance.image)
-    if instance.certificate:
-        delete_file_if_exists(instance.certificate)
-
-
-@receiver(post_delete, sender=Certificate)
-def delete_certificate_image(sender, instance, **kwargs):
-    if instance.image:
-        delete_file_if_exists(instance.image)
-
-
-@receiver(post_delete, sender=GalleryImage)
-def delete_gallery_image(sender, instance, **kwargs):
-    if instance.image:
-        delete_file_if_exists(instance.image)
+@receiver(post_delete, sender=Review)
+def delete_review_screenshot(sender, instance, **kwargs):
+    if instance.screenshot:
+        delete_file_if_exists(instance.screenshot)

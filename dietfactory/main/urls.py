@@ -1,9 +1,7 @@
-from django.conf import settings
-from django.conf.urls.static import static
 from django.urls import path
 
 from .views import HomeView, ProductListView, contact_ajax, ProductDetailView, ProductDetailJsonView, CertificateView, \
-    SearchProductsView
+    SearchProductsView, ReviewsListView
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
@@ -15,4 +13,5 @@ urlpatterns = [
     path('privacy/', HomeView.as_view(), name='privacy'),
     path('terms/', HomeView.as_view(), name='terms'),
     path('contact-ajax/', contact_ajax, name='contact_ajax'),
+    path('reviews/', ReviewsListView.as_view(), name='reviews_list'),
 ]

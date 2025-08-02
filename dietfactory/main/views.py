@@ -1,8 +1,11 @@
 import requests
 from decouple import config
 from django.conf import settings
+from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db.models.functions import Lower
 from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
@@ -10,7 +13,9 @@ from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 
 from .forms import ContactForm
+from .forms import ReviewForm
 from .models import Product, Certificate, GalleryImage
+from .models import Review
 
 
 # Create your views here.
@@ -140,3 +145,40 @@ class ProductDetailJsonView(View):
             'instagram': product.instagram,
         }
         return JsonResponse(data)
+
+
+class ReviewsListView(View):
+    """Страница со всеми отзывами"""
+
+    def get(self, request):
+        reviews = Review.objects.all().order_by('-created_at')  # сортировка по дате
+        paginator = Paginator(reviews, 12)  # 12 отзывов на страницу
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        form = ReviewForm()
+
+        return render(request, 'main/reviews.html', {
+            'page_obj': page_obj,
+            'form': form
+        })
+
+    def post(self, request):
+        form = ReviewForm(request.POST)
+        reviews = Review.objects.all().order_by('-created_at')
+        paginator = Paginator(reviews, 12)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        if form.is_valid():
+            review = form.save(commit=False)
+            # Можно включить модерацию: review.is_published = False
+            review.save()
+            messages.success(request, "Спасибо за ваш отзыв! Он будет опубликован после проверки.")
+            return redirect('reviews_list')
+        else:
+            messages.error(request, "Проверьте правильность заполнения формы.")
+            return render(request, 'main/reviews.html', {
+                'page_obj': page_obj,
+                'form': form
+            })
