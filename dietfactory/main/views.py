@@ -143,6 +143,12 @@ class ProductDetailJsonView(View):
             'image': product.image.url if product.image else '',
             'certificate': product.certificate.url if product.certificate else '',
             'instagram': product.instagram,
+            'weight': product.weight,
+            'composition': product.composition,
+            'calories': float(product.calories),
+            'proteins': float(product.proteins),
+            'fats': float(product.fats),
+            'carbs': float(product.carbs),
         }
         return JsonResponse(data)
 

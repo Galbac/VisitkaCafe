@@ -7,56 +7,67 @@ from .models import Product, Certificate, GalleryImage, Review
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug', 'image_preview', 'certificate_tag')
-    search_fields = ('name', 'description')
+    list_display = ('name', 'slug', 'weight', 'image_preview', 'certificate_tag')
+    search_fields = ('name', 'description', 'composition')
     prepopulated_fields = {"slug": ("name",)}
     readonly_fields = ('image_tag', 'certificate_tag')
-
-    # Делаем поля кликабельными в списке
     list_display_links = ('name', 'image_preview')
 
+    # Поля, которые будут отображаться в форме редактирования
+    fieldsets = [
+        ('Основная информация', {
+            'fields': ['name', 'slug', 'description', 'technology', 'image', 'image_tag']
+        }),
+        ('Состав и питание', {
+            'fields': ['weight', 'composition', 'calories', 'proteins', 'fats', 'carbs'],
+            'description': '<p style="color: #555; font-size: 0.9em;">Укажите состав и КБЖУ на 100 грамм продукта.</p>'
+        }),
+        ('Файлы', {
+            'fields': ['certificate', 'certificate_tag']
+        }),
+        ('Ссылки', {
+            'fields': ['instagram']
+        }),
+    ]
+
+    # Отображение миниатюры в списке
     def image_preview(self, obj):
-        """
-        Отображение миниатюры в списке объектов (list view).
-        Компактная, стилизованная иконка.
-        """
         if obj.image:
             return mark_safe(
-                f'<img src="{obj.image.url}" style="height: 40px; width: 40px; object-fit: cover; border-radius: 5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); border: 1px solid #ddd;" title="{obj.name}">'
+                f'<img src="{obj.image.url}" '
+                'style="height: 40px; width: 40px; object-fit: cover; border-radius: 5px; '
+                'box-shadow: 0 1px 3px rgba(0,0,0,0.2); border: 1px solid #ddd;" '
+                f'title="{obj.name}">'
             )
         return mark_safe(
-            '<div style="height: 40px; width: 40px; background-color: #f0f0f0; border-radius: 5px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;" title="Нет изображения">'
-            '<span style="color: #999; font-size: 16px;">—</span>'
-            '</div>'
+            '<div style="height: 40px; width: 40px; background-color: #f0f0f0; '
+            'border-radius: 5px; display: flex; align-items: center; justify-content: center; '
+            'border: 1px solid #ddd;" title="Нет изображения">'
+            '<span style="color: #999; font-size: 16px;">—</span></div>'
         )
 
     image_preview.short_description = 'Фото'
 
-    # Примечание: allow_tags устарело, используем mark_safe
-
+    # Отображение изображения в форме
     def image_tag(self, obj):
-        """
-        Отображение полноразмерного изображения в форме редактирования (change form).
-        """
         if obj.image:
             return mark_safe(
                 f'<a href="{obj.image.url}" target="_blank" title="Открыть оригинал">'
-                f'<img src="{obj.image.url}" style="max-height: 200px; max-width: 100%; border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); border: 1px solid #eee;">'
-                f'</a>'
+                f'<img src="{obj.image.url}" style="max-height: 200px; max-width: 100%; '
+                'border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); '
+                'border: 1px solid #eee;">'
+                '</a>'
             )
         return "Нет изображения"
 
     image_tag.short_description = 'Изображение'
 
+    # Отображение сертификата
     def certificate_tag(self, obj):
-        """
-        Отображение ссылки на сертификат.
-        """
         if obj.certificate:
             return mark_safe(
-                f'<a href="{obj.certificate.url}" target="_blank" style="color: #1a73e8; text-decoration: none; font-weight: 500;">'
-                f'📄 Открыть'
-                f'</a>'
+                f'<a href="{obj.certificate.url}" target="_blank" style="color: #1a73e8; '
+                'text-decoration: none; font-weight: 500;">📄 Открыть</a>'
             )
         return '-'
 

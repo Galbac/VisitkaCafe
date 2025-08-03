@@ -1,1 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+*.egg
+*.log
+
+# Environment
+env/
+venv/
+ENV/
+.venv/
 .env
+
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+static_root/
+local_settings.py
+
+# Migrations (можно не игнорировать, если ты хочешь их сохранять в репозитории)
+# */migrations/
+# !*/migrations/__init__.py
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Coverage
+htmlcov/
+.coverage
+
+# MyPy
+.mypy_cache/
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# pytest
+.pytest_cache/
+.cache/
+
+# Other
+*.swp
+*.swo
+*.bak
+*.tmp

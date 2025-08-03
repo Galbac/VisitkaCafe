@@ -65,8 +65,10 @@ def optimize_image(image_field, max_size=(1200, 1200), quality=85):
 
 # === Остальные модели без изменений (Product, Certificate, GalleryImage) ===
 
+# models.py (обновлённая часть модели Product)
+
 class Product(models.Model):
-    name = models.CharField('Название продукта')
+    name = models.CharField('Название продукта', max_length=200)
     slug = models.SlugField('URL', unique=True, blank=True)
     description = models.TextField('Описание продукта')
     technology = models.TextField('Технология производства', blank=True)
@@ -74,6 +76,16 @@ class Product(models.Model):
     certificate = models.FileField('Сертификат', upload_to='certificates/', blank=True, null=True)
     instagram = models.URLField('Ссылка на Instagram', blank=True,
                                 default='https://www.instagram.com/eda__bez.vreda?igsh=eHR2bjNoNjNmcnA4')
+
+    weight = models.TextField('Вес / фасовка', help_text="Например: 300 г (2 штуки)")
+    composition = models.TextField('Состав', help_text="Каждый ингредиент с новой строки")
+
+    # КБЖУ на 100 грамм
+    calories = models.PositiveSmallIntegerField('Калории (ккал)', help_text="на 100 г")
+    proteins = models.DecimalField('Белки (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
+    fats = models.DecimalField('Жиры (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
+    carbs = models.DecimalField('Углеводы (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
+
 
     class Meta:
         verbose_name = _("Продукт")
@@ -86,13 +98,9 @@ class Product(models.Model):
                 base_slug = "product"
             slug = base_slug
             n = 1
-            try:
-                while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                    slug = f"{base_slug}-{n}"
-                    n += 1
-            except:
-                import time
-                slug = f"{base_slug}-{int(time.time())}"
+            while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base_slug}-{n}"
+                n += 1
             self.slug = slug
         super().save(*args, **kwargs)
 

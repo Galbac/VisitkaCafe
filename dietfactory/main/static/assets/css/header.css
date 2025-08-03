@@ -12,7 +12,7 @@
 
 /* Стили для "прилипшей" шапки при скролле */
 .site-header.scrolled {
-    transform: translateY(-100%);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
 }
 
 .site-header.scrolled.visible {
@@ -43,13 +43,13 @@
     width: 40px;
     border-radius: 12px; /* Сlightly уменьшена скругленность */
     background: #e8f5e9;
-    box-shadow: 0 2px 8px rgba(46,204,113,0.08);
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.08);
     transition: box-shadow 0.2s, transform 0.2s;
     object-fit: cover; /* Если это изображение */
 }
 
 .logo-block:hover .logo-img {
-    box-shadow: 0 4px 16px rgba(46,204,113,0.18);
+    box-shadow: 0 4px 16px rgba(46, 204, 113, 0.18);
     transform: scale(1.04);
 }
 
@@ -135,7 +135,7 @@
 .nav-list a:hover, .nav-list a:focus {
     background: #e8f5e9;
     color: #27ae60;
-    box-shadow: 0 2px 8px rgba(46,204,113,0.08);
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.08);
 }
 
 /* --- Поиск --- */
@@ -145,14 +145,14 @@
     background: #f8f9fa;
     border-radius: 20px; /* Уменьшена скругленность */
     padding: 2px 8px 2px 14px; /* Уменьшен padding */
-    box-shadow: 0 1px 4px rgba(44,62,80,0.04);
+    box-shadow: 0 1px 4px rgba(44, 62, 80, 0.04);
     transition: box-shadow 0.2s, background 0.2s;
     flex-shrink: 0; /* Поле поиска не сжимается */
 }
 
 .header-search:hover, .header-search:focus-within {
     background: #e8f5e9;
-    box-shadow: 0 2px 8px rgba(46,204,113,0.12);
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.12);
 }
 
 .header-search input[type="search"] {
@@ -236,20 +236,25 @@
     .header-flex {
         padding: 0 15px;
     }
+
     .logo-img {
         height: 36px;
         width: 36px;
     }
+
     .logo-title {
         font-size: 1.3rem;
     }
+
     .nav-list {
         gap: 18px;
     }
+
     .nav-list a {
         font-size: 0.95rem;
         padding: 5px 12px;
     }
+
     .header-search input[type="search"] {
         width: 120px;
         font-size: 0.9rem;
@@ -290,7 +295,8 @@
     }
 
     .main-nav.show {
-        display: flex;
+        transform: translateY(0);
+        transition-delay: calc(0.05s * var(--i));
         opacity: 1;
     }
 
@@ -310,11 +316,14 @@
     }
 
     .nav-list li {
+        opacity: 1;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
         width: 100%;
         border-bottom: 1px solid #eee; /* Разделитель между пунктами */
     }
 
-    .nav-list li:last-child {
+    .main-nav.show:last-child {
         border-bottom: none;
     }
 

@@ -239,7 +239,7 @@ body {
 /* Main Content */
 .main-content {
     min-height: calc(100vh - 200px);
-    padding: 40px 0;
+    padding: 0px 0;
 }
 
 /* Footer */
@@ -748,3 +748,4 @@ body {
         font-size: 0.9rem;
     }
 }
+
