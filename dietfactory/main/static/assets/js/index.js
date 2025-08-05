@@ -57,6 +57,21 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+        document.addEventListener('DOMContentLoaded', function () {
+        const aboutSection = document.querySelector('.about-section');
+
+        function checkVisibility() {
+            const rect = aboutSection.getBoundingClientRect();
+            if (rect.top < window.innerHeight * 0.8) {
+                aboutSection.classList.add('show');
+            }
+        }
+
+        // Проверяем при загрузке
+        checkVisibility();
+        // И при скролле
+        window.addEventListener('scroll', checkVisibility);
+    });
 
     // Mobile menu toggle (if needed)
     const mobileMenuToggle = document.querySelector('.mobile-nav-toggle');
@@ -393,3 +408,30 @@ window.FitAudit = {
         });
     }
 };
+
+
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData); // Преобразуем в объект
+
+    fetch('/contact/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/json',  // ← Обязательно!
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        const msgBox = document.getElementById('contactFormMsg');
+        msgBox.textContent = data.message;
+        msgBox.className = data.success ? 'form-message success' : 'form-message error';
+    })
+    .catch(err => {
+        console.error('Ошибка отправки:', err);
+        document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
+    });
+});
+

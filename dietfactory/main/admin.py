@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .models import Product, Certificate, GalleryImage, Review
+from .models import Product, Certificate, GalleryImage, Review, Exclusion
 
 
 @admin.register(Product)
@@ -174,3 +174,30 @@ class ReviewAdmin(admin.ModelAdmin):
         return bool(obj.screenshot)
     has_screenshot.boolean = True
     has_screenshot.short_description = "Есть скриншот"
+
+
+@admin.register(Exclusion)
+class ExclusionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'order', 'icon_preview')
+    list_editable = ('order',)
+    list_display_links = ('name',)
+    list_per_page = 20
+    ordering = ['order']
+
+    # Превью иконки в списке
+    def icon_preview(self, obj):
+        if obj.icon:
+            return f'<img src="{obj.icon.url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">'
+        return '—'
+    icon_preview.short_description = 'Превью'
+    icon_preview.allow_tags = True  # Для Django < 4.2
+
+    # Форма редактирования
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'icon', 'order')
+        }),
+    )
+
+    # Опционально: добавить поиск
+    search_fields = ['name']

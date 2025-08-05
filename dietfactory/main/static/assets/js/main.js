@@ -298,3 +298,34 @@ window.FitAudit = {
         });
     }
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        // Открытие и закрытие меню
+        menuToggle.addEventListener('click', function () {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            mainNav.classList.toggle('show');
+            this.classList.toggle('open');
+        });
+
+        // Закрытие при клике вне меню
+        document.addEventListener('click', function (e) {
+            if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+                mainNav.classList.remove('show');
+                menuToggle.classList.remove('open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Закрытие при нажатии Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && mainNav.classList.contains('show')) {
+                mainNav.classList.remove('show');
+                menuToggle.classList.remove('open');
+                menuToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });

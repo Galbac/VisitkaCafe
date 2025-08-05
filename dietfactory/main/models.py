@@ -233,3 +233,30 @@ def optimize_review_screenshot(sender, instance, **kwargs):
 def delete_review_screenshot(sender, instance, **kwargs):
     if instance.screenshot:
         delete_file_if_exists(instance.screenshot)
+
+
+class Exclusion(models.Model):
+    name = models.CharField(
+        'Название',
+        max_length=50,
+        help_text='Например: Сахара, Лактозы'
+    )
+    icon = models.ImageField(
+        'Иконка',
+        upload_to='exclusions/',
+        help_text='SVG или PNG (рекомендуется 100x100)'
+    )
+    order = models.PositiveIntegerField(
+        'Порядок',
+        default=0,
+        db_index=True,
+        help_text='Меньше — выше в списке'
+    )
+
+    class Meta:
+        verbose_name = 'Элемент "Не содержит"'
+        verbose_name_plural = 'Элементы "Не содержит"'
+        ordering = ['order']
+
+    def __str__(self):
+        return self.name

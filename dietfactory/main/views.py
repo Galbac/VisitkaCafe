@@ -1,11 +1,16 @@
+import json
+
 import requests
-from decouple import config
+from decouple import config  # или используйте getattr
 from django.conf import settings
 from django.contrib import messages
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
+# views.py
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
@@ -14,7 +19,7 @@ from django.views.generic.detail import DetailView
 
 from .forms import ContactForm
 from .forms import ReviewForm
-from .models import Product, Certificate, GalleryImage
+from .models import Product, Certificate, GalleryImage, Exclusion
 from .models import Review
 
 
@@ -28,6 +33,7 @@ class HomeView(TemplateView):
         context = super().get_context_data(**kwargs)
         # Получаем активные изображения галереи, отсортированные по полю order
         context['gallery_images'] = GalleryImage.objects.filter(is_active=True)
+        context['exclusions'] = Exclusion.objects.all()
         # ... (другой контекст, если есть) ...
         return context
 
@@ -78,48 +84,65 @@ class ProductListView(ListView):
 
 class ContactAjaxView(View):
     def post(self, request, *args, **kwargs):
-        form = ContactForm(request.POST)
+        print("=== Начало обработки POST запроса ===")
+        print("Content-Type:", request.content_type)
+        print("Raw body:", request.body)
+
+        # Парсим JSON
+        try:
+            data = json.loads(request.body)
+            print("Parsed data:", data)
+        except json.JSONDecodeError:
+            print("❌ Ошибка парсинга JSON")
+            return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
+
+        form = ContactForm(data)  # ← Передаём data, не request.POST
+
         if form.is_valid():
+            print("✅ Форма валидна")
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
 
-            # Telegram логика
-            token = getattr(settings, 'TELEGRAM_BOT_TOKEN', config('TELEGRAM_BOT_TOKEN', default=''))
-            chat_id = getattr(settings, 'TELEGRAM_CHAT_ID', config('TELEGRAM_CHAT_ID', default=''))
-
-            # Красивое сообщение
-            text = (
-                "✉️ <b>Новое сообщение с сайта</b>\n"
-                "━━━━━━━━━━━━━━━━━━━━\n"
-                f"👤 <b>Имя:</b> {name}\n"
-                f"📧 <b>Email:</b> {email}\n"
-                f"📝 <b>Тема:</b> {subject}\n"
-                "━━━━━━━━━━━━━━━━━━━━\n"
-                f"💬 <b>Сообщение:</b>\n{message}"
+            email_body = (
+                f"✉️ Новое сообщение с сайта\n"
+                f"━━━━━━━━━━━━━━━━━━━━\n"
+                f"👤 Имя: {name}\n"
+                f"📧 Email: {email}\n"
+                f"📝 Тема: {subject}\n"
+                f"━━━━━━━━━━━━━━━━━━━━\n"
+                f"💬 Сообщение:\n{message}"
             )
-
-            url = f"https://api.telegram.org/bot{token}/sendMessage"
-            payload = {
-                'chat_id': chat_id,
-                'text': text,
-                'parse_mode': 'HTML'
-            }
+            print(f"📧 Отправляем на: {settings.EMAIL_ADMIN}")
 
             try:
-                resp = requests.post(url, data=payload, timeout=5)
-                if resp.status_code == 200:
-                    return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
-                else:
-                    return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
-            except Exception:
-                return JsonResponse({'success': False, 'message': 'Ошибка соединения с Telegram.'})
+                print("📩 Начинаем отправку email...")
+                print(f"  SMTP: {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
+                print(f"  USE_SSL: {settings.EMAIL_USE_SSL}")
+                print(f"  FROM: {settings.DEFAULT_FROM_EMAIL}")
+                print(f"  TO: {settings.EMAIL_ADMIN}")
+                print(f"  Пароль загружен: {'да' if settings.EMAIL_HOST_PASSWORD else 'нет'}")
+
+                send_mail(
+                    subject=f"Сообщение с сайта: {subject}",
+                    message=email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.EMAIL_ADMIN],
+                    fail_silently=False,
+                )
+                print("✅ Письмо успешно отправлено")
+                return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
+
+            except Exception as e:
+                import traceback
+                print(f"❌ Ошибка при отправке email: {type(e).__name__}: {e}")
+                print("Полный трейсбэк:")
+                traceback.print_exc()
+                return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
         else:
+            print("❌ Форма невалидна. Ошибки:", form.errors)
             return JsonResponse({'success': False, 'message': 'Проверьте правильность заполнения формы.'})
-
-
-contact_ajax = csrf_exempt(ContactAjaxView.as_view())
 
 
 class ProductDetailView(DetailView):
