@@ -1,6 +1,6 @@
 // Main JavaScript file for FitAudit
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
 
     // Search functionality
     const searchToggle = document.querySelector('.js__th_form__show');
@@ -9,27 +9,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('js__th_search');
 
     if (searchToggle && searchForm) {
-        searchToggle.addEventListener('click', function(e) {
+        searchToggle.addEventListener('click', function (e) {
             e.preventDefault();
             searchForm.classList.add('show');
             searchInput.focus();
         });
 
         if (searchClose) {
-            searchClose.addEventListener('click', function() {
+            searchClose.addEventListener('click', function () {
                 searchForm.classList.remove('show');
             });
         }
 
         // Close search form when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!searchForm.contains(e.target) && !searchToggle.contains(e.target)) {
                 searchForm.classList.remove('show');
             }
         });
 
         // Close search form on escape key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 searchForm.classList.remove('show');
             }
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnTop = document.getElementById('btnTop');
 
     if (btnTop) {
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             if (window.pageYOffset > 300) {
                 btnTop.style.display = 'flex';
             } else {
@@ -48,12 +48,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        btnTop.addEventListener('click', function() {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  });
+        btnTop.addEventListener('click', function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
     }
 
     // Mobile menu toggle (if needed)
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.querySelector('.mhead__nav');
 
     if (mobileMenuToggle && navMenu) {
-        mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggle.addEventListener('click', function () {
             navMenu.classList.toggle('active');
             document.body.classList.toggle('mobile-nav-active');
         });
@@ -70,18 +70,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Submenu functionality
     const submenuItems = document.querySelectorAll('.flhead_item');
 
-    submenuItems.forEach(function(item) {
+    submenuItems.forEach(function (item) {
         const submenu = item.querySelector('.flhead_submenu');
 
         if (submenu) {
             // Show submenu on hover (desktop)
-            item.addEventListener('mouseenter', function() {
+            item.addEventListener('mouseenter', function () {
                 if (window.innerWidth > 768) {
                     submenu.style.display = 'block';
                 }
             });
 
-            item.addEventListener('mouseleave', function() {
+            item.addEventListener('mouseleave', function () {
                 if (window.innerWidth > 768) {
                     submenu.style.display = 'none';
                 }
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Toggle submenu on click (mobile)
             const content = item.querySelector('.flhead_item__content');
             if (content) {
-                content.addEventListener('click', function(e) {
+                content.addEventListener('click', function (e) {
                     if (window.innerWidth <= 768) {
                         e.preventDefault();
                         submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
@@ -103,8 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Smooth scrolling for anchor links
     const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
-    anchorLinks.forEach(function(link) {
-        link.addEventListener('click', function(e) {
+    anchorLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
 
             if (href !== '#') {
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const header = document.querySelector('.header');
     let lastScrollTop = 0;
 
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
         if (scrollTop > lastScrollTop && scrollTop > 100) {
@@ -144,14 +144,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add loading animation for search
     if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
+        searchForm.addEventListener('submit', function (e) {
             const submitBtn = this.querySelector('input[type="submit"]');
             if (submitBtn) {
                 submitBtn.value = 'Поиск...';
                 submitBtn.disabled = true;
 
                 // Reset after 2 seconds (simulate search)
-                setTimeout(function() {
+                setTimeout(function () {
                     submitBtn.value = 'Find';
                     submitBtn.disabled = false;
                 }, 2000);
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.mhead__mn a');
     const currentPath = window.location.pathname;
 
-    navLinks.forEach(function(link) {
+    navLinks.forEach(function (link) {
         if (link.getAttribute('href') === currentPath) {
             link.classList.add('active');
         }
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add parallax effect to background (if exists)
     const parallaxElement = document.getElementById('fixmixed');
     if (parallaxElement) {
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             const scrolled = window.pageYOffset;
             const rate = scrolled * -0.5;
             parallaxElement.style.transform = 'translateY(' + rate + 'px)';
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form validation for contact form
     const contactForm = document.querySelector('form[action="#"]');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
 
             const name = this.querySelector('input[name="name"]');
@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.textContent = 'Отправляется...';
             submitBtn.disabled = true;
 
-            setTimeout(function() {
+            setTimeout(function () {
                 alert('Сообщение отправлено!');
                 contactForm.reset();
                 submitBtn.textContent = originalText;
@@ -236,8 +236,8 @@ document.addEventListener('DOMContentLoaded', function() {
             rootMargin: '0px 0px -50px 0px'
         };
 
-        const observer = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('animate-in');
                 }
@@ -246,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Observe elements that should animate
         const animateElements = document.querySelectorAll('.product-card, .flhead_item, .mhead__mn li');
-        animateElements.forEach(function(el) {
+        animateElements.forEach(function (el) {
             observer.observe(el);
         });
     }
@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Apply debouncing to scroll events
-    const debouncedScrollHandler = debounce(function() {
+    const debouncedScrollHandler = debounce(function () {
         // Scroll event logic here
     }, 10);
 
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Export functions for use in other scripts (if needed)
 window.FitAudit = {
-    showSearch: function() {
+    showSearch: function () {
         const searchForm = document.querySelector('.th_form');
         if (searchForm) {
             searchForm.classList.add('show');
@@ -284,14 +284,14 @@ window.FitAudit = {
         }
     },
 
-    hideSearch: function() {
+    hideSearch: function () {
         const searchForm = document.querySelector('.th_form');
         if (searchForm) {
             searchForm.classList.remove('show');
         }
     },
 
-    scrollToTop: function() {
+    scrollToTop: function () {
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -299,33 +299,23 @@ window.FitAudit = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', function () {
-        const menuToggle = document.querySelector('.mobile-menu-toggle');
-        const mainNav = document.querySelector('.main-nav');
 
-        // Открытие и закрытие меню
-        menuToggle.addEventListener('click', function () {
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            this.setAttribute('aria-expanded', !isExpanded);
-            mainNav.classList.toggle('show');
-            this.classList.toggle('open');
-        });
 
-        // Закрытие при клике вне меню
-        document.addEventListener('click', function (e) {
-            if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-                mainNav.classList.remove('show');
-                menuToggle.classList.remove('open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
+// Закрытие при клике вне меню
+document.addEventListener('click', function (e) {
+    if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+        mainNav.classList.remove('show');
+        menuToggle.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+    }
+});
 
-        // Закрытие при нажатии Escape
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && mainNav.classList.contains('show')) {
-                mainNav.classList.remove('show');
-                menuToggle.classList.remove('open');
-                menuToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
-    });
+// Закрытие при нажатии Escape
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && mainNav.classList.contains('show')) {
+        mainNav.classList.remove('show');
+        menuToggle.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+    }
+});
+

@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
-        document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
         const aboutSection = document.querySelector('.about-section');
 
         function checkVisibility() {
@@ -410,7 +410,7 @@ window.FitAudit = {
 };
 
 
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const formData = new FormData(this);
     const data = Object.fromEntries(formData); // Преобразуем в объект
@@ -423,15 +423,15 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then(data => {
-        const msgBox = document.getElementById('contactFormMsg');
-        msgBox.textContent = data.message;
-        msgBox.className = data.success ? 'form-message success' : 'form-message error';
-    })
-    .catch(err => {
-        console.error('Ошибка отправки:', err);
-        document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
-    });
+        .then(response => response.json())
+        .then(data => {
+            const msgBox = document.getElementById('contactFormMsg');
+            msgBox.textContent = data.message;
+            msgBox.className = data.success ? 'form-message success' : 'form-message error';
+        })
+        .catch(err => {
+            console.error('Ошибка отправки:', err);
+            document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
+        });
 });
 

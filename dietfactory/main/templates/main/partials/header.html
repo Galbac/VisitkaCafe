@@ -8,35 +8,33 @@
         </a>
 
         <!-- Гамбургер-меню -->
-        <!-- Гамбургер-меню -->
-        <button class="mobile-menu-toggle" aria-label="Открыть меню" aria-expanded="false"
-                aria-controls="main-navigation">
+        <button class="mobile-menu-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-navigation">
             <span></span>
             <span></span>
             <span></span>
         </button>
 
-        <!-- Мобильное и десктопное меню (одно и то же) -->
+        <!-- Навигация -->
+
         <nav class="main-nav" id="main-navigation" role="navigation" aria-label="Основная навигация">
             <ul class="nav-list">
-                <li><a href="/products/">Продукты</a></li>
-                <li><a href="/certifications/">Сертификаты</a></li>
-                <li><a href="/reviews/">Отзывы</a></li>
+                <li style="--i:1"><a href="/products/">Продукты</a></li>
+                <li style="--i:2"><a href="/certifications/">Сертификаты</a></li>
+                <li style="--i:3"><a href="/reviews/">Отзывы</a></li>
             </ul>
         </nav>
 
         <!-- Поиск -->
         <form class="header-search" action="/search/" method="get" role="search">
             <input
-                    type="search"
-                    name="query"
-                    placeholder="Поиск продуктов..."
-                    aria-label="Поиск по сайту"
-                    autocomplete="off"
+                type="search"
+                name="query"
+                placeholder="Поиск продуктов..."
+                aria-label="Поиск по сайту"
+                autocomplete="off"
             >
             <button type="submit" aria-label="Выполнить поиск">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="9" r="7"/>
                     <line x1="16" y1="16" x2="13.5" y2="13.5"/>
                 </svg>
@@ -44,10 +42,8 @@
         </form>
 
         <!-- Instagram -->
-        <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" rel="noopener" class="header-insta"
-           aria-label="Мы в Instagram">
-            <svg class="insta-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e1306c"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" rel="noopener" class="header-insta" aria-label="Мы в Instagram">
+            <svg class="insta-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e1306c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="2" width="20" height="20" rx="5"/>
                 <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                 <circle cx="17.5" cy="6.5" r="1.5"/>

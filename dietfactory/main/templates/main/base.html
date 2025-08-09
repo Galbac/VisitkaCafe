@@ -11,14 +11,34 @@
           content="{% block keywords %}питание, продукты, калории, диета, здоровье, еда без вреда{% endblock %}">
     <!-- Подключение основных стилей -->
     <link href="{% static 'assets/css/header.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/footer.css' %}" rel="stylesheet">
+
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
     <link href="{% static 'assets/css/index.css' %}" rel="stylesheet">
-
+    <!-- Иконка на телефоне -->
     <link rel="icon" href="{% static 'assets/img/favicon.svg' %}" type="image/x-icon">
-    <!-- Блок для дополнительных стилей на отдельных страницах -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/img/apple-touch-icon-180x180.png' %}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'assets/img/apple-touch-icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'assets/img/apple-touch-icon-120x120.png' %}">
+    <link rel="apple-touch-icon" sizes="76x76" href="{% static 'assets/img/apple-touch-icon-76x76.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'assets/img/apple-touch-icon.png' %}">
+    <!-- Название приложения -->
+    <meta name="apple-mobile-web-app-title" content="Еда без вреда">
+    <!-- Фон (например, цвет лого или бренда) -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- Значения: default, black, black-translucent -->
+
+    <!-- Режим полноэкранного приложения (без браузерной панели) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+    <link rel="manifest" href="{% url 'manifest' %}">
+    <meta name="theme-color" content="#2ecc71">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Еда без вреда">
     {% block extra_css %}{% endblock %}
 </head>
-<body >
+<body>
 {% include 'main/partials/header.html' %}
 <main class="main-content">
     {% block content %}{% endblock %}
@@ -30,5 +50,32 @@
 <script src="{% static 'assets/js/index.js' %}"></script>
 <!-- Блок для дополнительных скриптов на отдельных страницах -->
 {% block extra_js %}{% endblock %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileToggle = document.querySelector('.mobile-menu-toggle');
+        const mainNav = document.querySelector('.main-nav');
+
+        if (!mobileToggle || !mainNav) {
+            console.warn('Гамбургер или меню не найдены.');
+            return;
+        }
+
+        mobileToggle.addEventListener('click', function () {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            this.classList.toggle('open');
+            mainNav.classList.toggle('show');
+        });
+
+        // Закрытие меню при клике вне его
+        document.addEventListener('click', function (e) {
+            if (!mobileToggle.contains(e.target) && !mainNav.contains(e.target)) {
+                mobileToggle.setAttribute('aria-expanded', 'false');
+                mobileToggle.classList.remove('open');
+                mainNav.classList.remove('show');
+            }
+        });
+    });
+</script>
 </body>
 </html>

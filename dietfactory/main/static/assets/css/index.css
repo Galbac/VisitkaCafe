@@ -477,118 +477,11 @@
     background: #27ae60;
 }
 
-/* Certificates Section */
-.certificates-section {
-    background: #fff;
-    padding: 60px 0 40px 0;
-    border-top: 1px solid #e8f5e9;
-}
-
-.cert-title {
-    text-align: center;
-    font-size: 2rem;
-    color: #2ecc71;
-    font-weight: 800;
-    margin-bottom: 32px;
-}
-
-.cert-list {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.cert-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.cert-item img {
-    width: 180px; /* фиксированная ширина */
-    height: 250px; /* фиксированная высота */
-    object-fit: cover; /* обрезка изображения для сохранения пропорций */
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.cert-desc {
-    text-align: center;
-    color: #555;
-    font-size: 1.05rem;
-    margin-top: 12px;
-}
-
-@media (max-width: 600px) {
-    .cert-list {
-        gap: 12px;
-    }
-
-    .cert-item {
-        padding: 10px 8px;
-        min-width: 80px;
-    }
-
-    .cert-title {
-        font-size: 1.2rem;
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero-subtitle {
-        font-size: 1.2rem;
-    }
-
-    .contact-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-
-    .products-grid,
-    .categories-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-
-    .section-header h2 {
-        font-size: 2rem;
-    }
-
-    .product-card,
-    .category-card {
-        padding: 20px;
-    }
-}
 
 .contact-section iframe {
     margin-bottom: 30px;
 }
 
-.hero-section, .certificates-section {
-    opacity: 0;
-    transform: translateY(40px);
-    animation: fadeInUp 0.8s cubic-bezier(.4, 0, .2, 1) 0.1s forwards;
-}
-
-.certificates-section {
-    animation-delay: 0.5s;
-}
 
 @keyframes fadeInUp {
     to {
@@ -596,7 +489,6 @@
         transform: none;
     }
 }
-
 
 .about-section.fresh {
     padding: 100px 0;
@@ -1439,19 +1331,5 @@
 nav .burger {
     display: none;
 }
-
-/* Optional: JavaScript you’ll need in HTML to toggle the menu */
-/*
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const burger = document.querySelector(".burger");
-    const navMenu = document.querySelector("nav ul");
-
-    burger.addEventListener("click", () => {
-      navMenu.style.display = navMenu.style.display === "flex" ? "none" : "flex";
-    });
-  });
-</script>
-*/
 
 

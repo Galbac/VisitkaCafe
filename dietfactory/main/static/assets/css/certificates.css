@@ -1,0 +1,1087 @@
+/* --- Секция сертификатов --- */
+.certificates-section {
+    padding: 80px 0;
+    background: linear-gradient(to bottom, #ffffff, #f0f9f0);
+    position: relative;
+    overflow: hidden;
+}
+
+.certificates-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #2ecc71, #27ae60, #3498db);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.cert-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    letter-spacing: -0.5px;
+}
+
+.section-divider {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    margin: 0 auto 20px;
+    border-radius: 2px;
+}
+
+.cert-subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* --- Список сертификатов --- */
+.cert-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 35px;
+    margin-bottom: 50px;
+}
+
+/* --- Карточка сертификата --- */
+.cert-item {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.cert-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(39, 174, 96, 0.15);
+}
+
+/* --- Обертка изображения --- */
+.cert-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.cert-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.cert-item:hover .cert-img {
+    transform: scale(1.05);
+}
+
+.cert-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(46, 204, 113, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cert-item:hover .cert-overlay {
+    opacity: 1;
+}
+
+.cert-overlay-icon {
+    font-size: 3rem;
+    color: white;
+    opacity: 0.9;
+}
+
+/* --- Информация о сертификате --- */
+.cert-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 20px 20px 10px;
+    text-align: center;
+}
+
+.cert-desc {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    line-height: 1.6;
+    margin: 0 20px 20px;
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* --- Вступительный текст --- */
+.cert-intro {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #e8f5e9;
+    border-radius: 12px;
+    border-left: 4px solid #2ecc71;
+    border-right: 4px solid #2ecc71;
+}
+
+.cert-intro p {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    line-height: 1.7;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* --- Модальное окно --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-content {
+    position: relative;
+    background-color: transparent;
+    margin: auto;
+    padding: 0;
+    width: 90%;
+    max-width: 1000px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: translateY(-50%) scale(1);
+}
+
+.modal-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.modal-caption {
+    margin-top: 15px;
+    text-align: center;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    position: absolute;
+    top: -40px;
+    right: 10px;
+    color: #aaa;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: #fff;
+}
+
+.modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    font-size: 30px;
+    padding: 15px 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-prev {
+    left: 15px;
+}
+
+.modal-next {
+    right: 15px;
+}
+
+/* --- Адаптивность --- */
+@media (max-width: 992px) {
+    .cert-title {
+        font-size: 2.2rem;
+    }
+
+    .cert-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .cert-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+    }
+
+    .cert-img {
+        height: 200px;
+    }
+
+    .cert-name {
+        font-size: 1.3rem;
+    }
+
+    .cert-intro {
+        padding: 20px 15px;
+    }
+
+    .cert-intro p {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .certificates-section {
+        padding: 60px 0;
+    }
+
+    .cert-title {
+        font-size: 2rem;
+    }
+
+    .cert-subtitle {
+        font-size: 1rem;
+    }
+
+    .cert-list {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .cert-img {
+        height: 200px;
+    }
+
+    .cert-name {
+        font-size: 1.2rem;
+        margin: 15px 15px 8px;
+    }
+
+    .cert-desc {
+        font-size: 0.9rem;
+        margin: 0 15px 15px;
+    }
+
+    .modal-nav {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        padding: 10px 15px;
+    }
+
+    .modal-prev {
+        left: 10px;
+    }
+
+    .modal-next {
+        right: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .certificates-section {
+        padding: 50px 0;
+    }
+
+    .cert-title {
+        font-size: 1.8rem;
+    }
+
+    .section-divider {
+        width: 60px;
+        height: 3px;
+    }
+
+    .cert-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .cert-list {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .cert-img {
+        height: 220px;
+    }
+
+    .cert-name {
+        font-size: 1.25rem;
+    }
+
+    .cert-intro {
+        padding: 15px 10px;
+    }
+
+    .cert-intro p {
+        font-size: 0.95rem;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-close {
+        top: -35px;
+        font-size: 35px;
+    }
+
+    .modal-nav {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+        padding: 8px 12px;
+    }
+
+    .modal-prev {
+        left: 10px;
+    }
+
+    .modal-next {
+        right: 10px;
+    }
+
+    .modal-caption {
+        font-size: 1rem;
+    }
+}
+
+/* --- Секция сертификатов (адаптированная для мобильных) --- */
+.certificates-section {
+    padding: 80px 0 60px 0;
+    background: linear-gradient(to bottom, #ffffff, #f0f9f0);
+    position: relative;
+    overflow: hidden;
+}
+
+.certificates-section::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #2ecc71, #27ae60, #3498db);
+}
+
+/* --- Заголовок секции --- */
+.section-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #7f8c8d;
+    max-width: 700px;
+    margin: 0 auto 20px;
+    line-height: 1.6;
+}
+
+.section-divider {
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+/* --- Список сертификатов --- */
+.cert-list {
+    display: grid;
+    /* Адаптивная сетка: от 2 до 4 колонок */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+/* --- Элемент списка сертификатов --- */
+.cert-item {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 20px 15px;
+    width: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    isolation: isolate; /* Создаем новый stacking context для z-index */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.cert-item:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+    border-color: #2ecc71;
+}
+
+/* --- Обёртка изображения сертификата --- */
+.cert-image-wrapper {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.cert-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+    display: block;
+}
+
+.cert-item:hover .cert-img {
+    transform: scale(1.05);
+}
+
+.cert-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f5f9;
+    border-radius: 12px;
+}
+
+.placeholder-icon {
+    font-size: 2.5rem;
+    text-align: center;
+    color: #cbd5e1;
+}
+
+/* --- Информация о сертификате --- */
+.cert-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.cert-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+    line-height: 1.3;
+}
+
+.cert-item:hover .cert-name {
+    color: #2563eb;
+}
+
+.cert-desc {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    flex-grow: 1;
+}
+
+/* --- Ссылка "Подробнее" --- */
+.cert-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background: linear-gradient(90deg, #2563eb, #22c55e);
+    color: white;
+    font-weight: 600;
+    padding: 10px 15px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    letter-spacing: 0.5px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.cert-link:hover {
+    background: linear-gradient(90deg, #1d4ed8, #16a34a);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+    transform: translateY(-2px) scale(1.03);
+}
+
+.cert-icon {
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+}
+
+.cert-link:hover .cert-icon {
+    transform: translateX(3px);
+}
+
+/* --- Вступительный текст --- */
+.cert-intro {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    padding: 30px;
+    background: #e8f5e9;
+    border-radius: 16px;
+    border-left: 4px solid #2ecc71;
+    border-right: 4px solid #2ecc71;
+}
+
+.cert-intro p {
+    font-size: 1.1rem;
+    color: #2c3e50;
+    line-height: 1.7;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* --- Модальное окно для увеличенного изображения сертификата --- */
+/* Модальное окно */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.modal-content {
+    position: relative;
+    background-color: transparent;
+    margin: auto;
+    padding: 0;
+    width: 90%;
+    max-width: 1000px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    transition: transform 0.3s ease;
+    z-index: 2;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.modal.show .modal-content {
+    transform: translateY(-50%) scale(1);
+}
+
+.modal-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    object-fit: contain;
+    max-height: 80vh;
+    margin: 0 auto;
+}
+
+.modal-caption {
+    margin-top: 15px;
+    text-align: center;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    position: absolute;
+    top: -40px;
+    right: 10px;
+    color: #aaa;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+    z-index: 3;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    color: #fff;
+    outline: none;
+}
+
+/* Стрелки навигации */
+.modal-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    font-size: 30px;
+    padding: 15px 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.modal-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-prev {
+    left: 15px;
+}
+
+.modal-next {
+    right: 15px;
+}
+
+/* --- Адаптивность --- */
+@media (max-width: 1200px) {
+    .certificates-section {
+        padding: 70px 0 50px 0;
+    }
+
+    .section-title {
+        font-size: 2.3rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.15rem;
+    }
+
+    .cert-list {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+    }
+
+    .cert-item {
+        padding: 18px 14px;
+    }
+
+    .cert-image-wrapper {
+        height: 180px;
+    }
+
+    .cert-name {
+        font-size: 1.15rem;
+    }
+
+    .cert-desc {
+        font-size: 0.9rem;
+    }
+
+    .cert-link {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .cert-intro {
+        padding: 25px 20px;
+        margin-bottom: 35px;
+    }
+
+    .cert-intro p {
+        font-size: 1.05rem;
+    }
+
+    .modal-content {
+        max-width: 95vw;
+    }
+
+    .modal-img {
+        max-height: 75vh;
+    }
+
+    .modal-caption {
+        font-size: 1.1rem;
+    }
+
+    .modal-nav {
+        width: 55px;
+        height: 55px;
+        font-size: 28px;
+        padding: 12px 16px;
+    }
+
+    .modal-prev {
+        left: 12px;
+    }
+
+    .modal-next {
+        right: 12px;
+    }
+}
+
+@media (max-width: 992px) {
+    .certificates-section {
+        padding: 60px 0 50px 0;
+    }
+
+    .section-title {
+        font-size: 2.1rem;
+    }
+
+    .section-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .section-divider {
+        width: 70px;
+        height: 3px;
+    }
+
+    .cert-list {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 20px;
+    }
+
+    .cert-item {
+        padding: 16px 12px;
+        border-radius: 14px;
+    }
+
+    .cert-image-wrapper {
+        height: 160px;
+    }
+
+    .cert-name {
+        font-size: 1.1rem;
+    }
+
+    .cert-desc {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+    }
+
+    .cert-link {
+        padding: 7px 10px;
+        font-size: 0.85rem;
+    }
+
+    .cert-intro {
+        padding: 20px 15px;
+        margin-bottom: 30px;
+        border-radius: 14px;
+    }
+
+    .cert-intro p {
+        font-size: 1rem;
+    }
+
+    .modal-content {
+        max-width: 90vw;
+    }
+
+    .modal-img {
+        max-height: 70vh;
+    }
+
+    .modal-caption {
+        font-size: 1rem;
+    }
+
+    .modal-nav {
+        width: 50px;
+        height: 50px;
+        font-size: 26px;
+        padding: 10px 14px;
+    }
+
+    .modal-prev {
+        left: 10px;
+    }
+
+    .modal-next {
+        right: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .certificates-section {
+        padding: 50px 0 40px 0;
+    }
+
+    .section-title {
+        font-size: 1.9rem;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
+    .section-divider {
+        width: 60px;
+        height: 3px;
+    }
+
+    .cert-list {
+        /* На мобильных 2 колонки */
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 18px;
+    }
+
+    .cert-item {
+        padding: 14px 10px;
+        border-radius: 12px;
+    }
+
+    .cert-image-wrapper {
+        height: 140px;
+    }
+
+    .cert-name {
+        font-size: 1rem;
+    }
+
+    .cert-desc {
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .cert-link {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+
+    .cert-intro {
+        padding: 18px 12px;
+        margin-bottom: 25px;
+        border-radius: 12px;
+    }
+
+    .cert-intro p {
+        font-size: 0.95rem;
+    }
+
+    .modal-content {
+        max-width: 85vw;
+        width: 95%;
+    }
+
+    .modal-img {
+        max-height: 65vh;
+    }
+
+    .modal-caption {
+        font-size: 0.95rem;
+        margin-top: 12px;
+    }
+
+    .modal-nav {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+        padding: 8px 12px;
+    }
+
+    .modal-prev {
+        left: 8px;
+    }
+
+    .modal-next {
+        right: 8px;
+    }
+
+    .modal-close {
+        top: -35px;
+        right: 8px;
+        font-size: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .certificates-section {
+        padding: 40px 0 30px 0;
+    }
+
+    .section-title {
+        font-size: 1.7rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .section-divider {
+        width: 50px;
+        height: 2px;
+    }
+
+    .cert-list {
+        /* На очень маленьких экранах 1 колонка */
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .cert-item {
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 12px 8px;
+        border-radius: 10px;
+    }
+
+    .cert-image-wrapper {
+        height: 180px;
+    }
+
+    .cert-name {
+        font-size: 1.1rem;
+    }
+
+    .cert-desc {
+        font-size: 0.9rem;
+        margin-bottom: 12px;
+    }
+
+    .cert-link {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    .cert-intro {
+        padding: 15px 10px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+    }
+
+    .cert-intro p {
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        max-width: 95vw;
+        width: 95vw;
+        top: 50%;
+        transform: translateY(-50%) scale(0.8);
+    }
+
+    .modal.show .modal-content {
+        transform: translateY(-50%) scale(1);
+    }
+
+    .modal-img {
+        max-height: 60vh;
+    }
+
+    .modal-caption {
+        font-size: 0.9rem;
+        margin-top: 10px;
+    }
+
+    .modal-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 22px;
+        padding: 6px 10px;
+    }
+
+    .modal-prev {
+        left: 5px;
+    }
+
+    .modal-next {
+        right: 5px;
+    }
+
+    .modal-close {
+        top: -30px;
+        right: 5px;
+        font-size: 30px;
+    }
+}

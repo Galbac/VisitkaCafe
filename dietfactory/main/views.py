@@ -1,18 +1,15 @@
 import json
+import subprocess
+import traceback
 
-import requests
-from decouple import config  # или используйте getattr
 from django.conf import settings
 from django.contrib import messages
-from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.utils.decorators import method_decorator
 # views.py
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
@@ -42,7 +39,7 @@ class SearchProductsView(ListView):
     model = Product
     template_name = 'main/partials/search_results.html'
     context_object_name = 'products'
-    paginate_by = 25
+    paginate_by = 20
 
     def get_queryset(self):
         query = self.request.GET.get('query', '').strip()
@@ -88,15 +85,14 @@ class ContactAjaxView(View):
         print("Content-Type:", request.content_type)
         print("Raw body:", request.body)
 
-        # Парсим JSON
         try:
             data = json.loads(request.body)
-            print("Parsed data:", data)
+            print("Parsed ", data)
         except json.JSONDecodeError:
             print("❌ Ошибка парсинга JSON")
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
-        form = ContactForm(data)  # ← Передаём data, не request.POST
+        form = ContactForm(data)
 
         if form.is_valid():
             print("✅ Форма валидна")
@@ -117,33 +113,44 @@ class ContactAjaxView(View):
             print(f"📧 Отправляем на: {settings.EMAIL_ADMIN}")
 
             try:
-                print("📩 Начинаем отправку email...")
-                print(f"  SMTP: {settings.EMAIL_HOST}:{settings.EMAIL_PORT}")
-                print(f"  USE_SSL: {settings.EMAIL_USE_SSL}")
-                print(f"  FROM: {settings.DEFAULT_FROM_EMAIL}")
-                print(f"  TO: {settings.EMAIL_ADMIN}")
-                print(f"  Пароль загружен: {'да' if settings.EMAIL_HOST_PASSWORD else 'нет'}")
+                print("📩 Начинаем отправку email через msmtp...")
 
-                send_mail(
-                    subject=f"Сообщение с сайта: {subject}",
-                    message=email_body,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.EMAIL_ADMIN],
-                    fail_silently=False,
+                # Формируем письмо
+                mail_content = (
+                    f"To: {settings.EMAIL_ADMIN}\n"
+                    f"From: {settings.DEFAULT_FROM_EMAIL}\n"
+                    f"Subject: Сообщение с сайта: {subject}\n"
+                    f"Content-Type: text/plain; charset=utf-8\n"
+                    f"\n"
+                    f"{email_body}"
                 )
-                print("✅ Письмо успешно отправлено")
-                return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
 
+                # Вызываем msmtp
+                result = subprocess.run(
+                    ['msmtp', settings.EMAIL_ADMIN],
+                    input=mail_content,
+                    text=True,
+                    capture_output=True,
+                    timeout=10
+                )
+
+                if result.returncode == 0:
+                    print("✅ Письмо успешно отправлено через msmtp")
+                    return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
+                else:
+                    print(f"❌ Ошибка msmtp: {result.stderr}")
+                    return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
+
+            except subprocess.TimeoutExpired:
+                print("❌ Ошибка: таймаут отправки")
+                return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
             except Exception as e:
-                import traceback
                 print(f"❌ Ошибка при отправке email: {type(e).__name__}: {e}")
-                print("Полный трейсбэк:")
                 traceback.print_exc()
                 return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
         else:
             print("❌ Форма невалидна. Ошибки:", form.errors)
             return JsonResponse({'success': False, 'message': 'Проверьте правильность заполнения формы.'})
-
 
 class ProductDetailView(DetailView):
     model = Product
@@ -211,3 +218,29 @@ class ReviewsListView(View):
                 'page_obj': page_obj,
                 'form': form
             })
+
+
+class ManifestView(View):
+    def get(self, request):
+        manifest = {
+            "name": "Еда без вреда",
+            "short_name": "ЕдаБезВреда",
+            "description": "Натуральные продукты без вреда для здоровья",
+            "start_url": "/",
+            "display": "standalone",
+            "background_color": "#ffffff",
+            "theme_color": "#2ecc71",
+            "icons": [
+                {
+                    "src": request.build_absolute_uri("/static/assets/manifest/icon-192x192.png"),
+                    "sizes": "192x192",
+                    "type": "image/png"
+                },
+                {
+                    "src": request.build_absolute_uri("/static/assets/manifest/icon-512x512.png"),
+                    "sizes": "512x512",
+                    "type": "image/png"
+                }
+            ]
+        }
+        return JsonResponse(manifest)

@@ -1,6 +1,5 @@
 {% extends 'main/base.html' %}
 {% load static %}
-
 {% block title %}Поиск продуктов - Еда без вреда{% endblock %}
 {% block description %}Найдите полезные продукты питания без сахара, глютена и ГМО. Поиск по категории, названию или описанию.{% endblock %}
 
@@ -9,79 +8,82 @@
     <div class="search-header">
         <h1 class="search-title">
             {% if query %}
-                <span class="search-title-main">Результаты поиска</span>
-                <span class="search-title-query">"{{ query }}"</span>
+            <span class="search-title-main">Результаты поиска</span>
+            <span class="search-title-query">"{{ query }}"</span>
             {% else %}
-                <span class="search-title-main">Найдите полезный продукт</span>
-                <span class="search-title-sub">Введите название или категорию</span>
+            <span class="search-title-main">Найдите полезный продукт</span>
+            <span class="search-title-sub">Введите название или категорию</span>
             {% endif %}
         </h1>
-
         {% if products %}
-            {% if paginator.count is not None %}
-                <div class="search-stats">
-                    Найдено: <span class="stats-number">{{ paginator.count }}</span> продукт{{ paginator.count|pluralize:"а,ов" }}
-                    {% if is_paginated %}
-                    (Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }})
-                    {% endif %}
-                </div>
-            {% elif products %}
-                <div class="search-stats">
-                    Найдено: <span class="stats-number">{{ products|length }}</span> продукт{{ products|length|pluralize:"а,ов" }}
-                </div>
+        {% if paginator.count is not None %}
+        <div class="search-stats">
+            Найдено: <span class="stats-number">{{ paginator.count }}</span> продукт{{ paginator.count|pluralize:"а,ов"
+            }}
+            {% if is_paginated %}
+            (Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }})
             {% endif %}
+        </div>
+        {% elif products %}
+        <div class="search-stats">
+            Найдено: <span class="stats-number">{{ products|length }}</span> продукт{{ products|length|pluralize:"а,ов"
+            }}
+        </div>
+        {% endif %}
         {% endif %}
     </div>
 
-    <div class="product-grid">
+    <div class="products-grid" id="productsGrid">
         {% if products %}
-            {% for product in products %}
-                <div class="product-card" data-slug="{{ product.slug }}" tabindex="0">
-                    <div class="product-img-wrap">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img-mini" loading="lazy">
-                        {% else %}
-                            <div class="product-img-placeholder">
-                                <span class="placeholder-icon">🍲</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <div class="product-content">
-                        <h3 class="product-name">{{ product.name }}</h3>
-                        <!-- Описание и кнопка "Подробнее" убраны -->
-                    </div>
+        {% for product in products %}
+        <div class="product-card" data-slug="{{ product.slug }}" tabindex="0">
+            <div class="product-img-wrap">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img-mini" loading="lazy">
+                {% else %}
+                <div class="product-img-placeholder">
+                    <span class="placeholder-icon">🍲</span>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="no-results">
-                <div class="no-results-wrapper">
-                    <div class="no-results-icon">
-                        {% if query %}
-                            🔍
-                        {% else %}
-                            💭
-                        {% endif %}
-                    </div>
-                    <h3 class="no-results-title">
-                        {% if query %}
-                            Ничего не найдено
-                        {% else %}
-                            Начните поиск
-                        {% endif %}
-                    </h3>
-                    <p class="no-results-text">
-                        {% if query %}
-                            По запросу <strong>"{{ query }}"</strong> ничего не найдено. Попробуйте изменить поисковый запрос.
-                        {% else %}
-                            Введите ключевые слова в строке поиска выше, чтобы найти продукты.
-                        {% endif %}
-                    </p>
-                    <div class="no-results-actions">
-                        <a href="{% url 'home' %}" class="no-results-button primary">На главную</a>
-                        <a href="{% url 'products' %}" class="no-results-button secondary">К каталогу</a>
-                    </div>
+                {% endif %}
+            </div>
+            <div class="product-content">
+                <h3 class="product-name">{{ product.name }}</h3>
+                <p class="product-desc">{{ product.description|truncatechars:40 }}</p>
+                <div class="product-cta">
+                    <span class="cta-text">Подробнее</span>
+                    <span class="cta-icon">→</span>
                 </div>
             </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-results">
+            <div class="no-results-icon">
+                {% if query %}
+                🔍
+                {% else %}
+                💭
+                {% endif %}
+            </div>
+            <h3 class="no-results-title">
+                {% if query %}
+                Ничего не найдено
+                {% else %}
+                Начните поиск
+                {% endif %}
+            </h3>
+            <p class="no-results-text">
+                {% if query %}
+                По запросу <strong>"{{ query }}"</strong> ничего не найдено. Попробуйте изменить поисковый запрос.
+                {% else %}
+                Введите ключевые слова в строке поиска выше, чтобы найти продукты.
+                {% endif %}
+            </p>
+            <div class="no-results-actions">
+                <a href="{% url 'home' %}" class="no-results-button primary">На главную</a>
+                <a href="{% url 'products' %}" class="no-results-button secondary">К каталогу</a>
+            </div>
+        </div>
         {% endif %}
     </div>
 
@@ -90,1478 +92,82 @@
     <div class="pagination-wrapper">
         <ul class="pagination">
             {% if page_obj.has_previous %}
-                <li><a href="?query={{ query|urlencode }}&page=1" class="page-link">&laquo; Первая</a></li>
-                <li><a href="?query={{ query|urlencode }}&page={{ page_obj.previous_page_number }}" class="page-link">Предыдущая</a></li>
+            <li><a href="?query={{ query|urlencode }}&page=1" class="page-link">&laquo; Первая</a></li>
+            <li><a href="?query={{ query|urlencode }}&page={{ page_obj.previous_page_number }}" class="page-link">Предыдущая</a>
+            </li>
             {% endif %}
-
             {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <li><span class="page-link current">{{ num }}</span></li>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <li><a href="?query={{ query|urlencode }}&page={{ num }}" class="page-link">{{ num }}</a></li>
-                {% endif %}
+            {% if page_obj.number == num %}
+            <li><span class="page-link current">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li><a href="?query={{ query|urlencode }}&page={{ num }}" class="page-link">{{ num }}</a></li>
+            {% endif %}
             {% endfor %}
-
             {% if page_obj.has_next %}
-                <li><a href="?query={{ query|urlencode }}&page={{ page_obj.next_page_number }}" class="page-link">Следующая</a></li>
-                <li><a href="?query={{ query|urlencode }}&page={{ page_obj.paginator.num_pages }}" class="page-link">Последняя &raquo;</a></li>
+            <li><a href="?query={{ query|urlencode }}&page={{ page_obj.next_page_number }}"
+                   class="page-link">Следующая</a></li>
+            <li><a href="?query={{ query|urlencode }}&page={{ page_obj.paginator.num_pages }}" class="page-link">Последняя
+                &raquo;</a></li>
             {% endif %}
         </ul>
     </div>
     {% endif %}
 </div>
 
-<!-- Модальное окно продукта (скопировано из products.html) -->
-<div id="productModal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="modalName">
+<!-- Модальное окно (полностью как в products.html) -->
+<div id="productModal" class="modal" role="dialog" aria-labelledby="modalName">
     <div class="modal-overlay" tabindex="-1"></div>
     <div class="modal-content">
         <button class="modal-close" aria-label="Закрыть">×</button>
         <div class="modal-body">
-            <div class="modal-spinner" id="modalSpinner" aria-label="Загрузка...">
+            <div class="modal-spinner" id="modalSpinner" style="display: none;">
                 <div class="spinner"></div>
             </div>
-            <div class="modal-img-modal-wrap">
-                <img id="modalImg" src="" alt="" style="display:none;">
+            <div class="modal-img-wrap">
+                <img id="modalImg" src="" alt="">
             </div>
-            <div class="modal-text-content">
-                <h3 id="modalName" class="modal-name"></h3>
-                <p id="modalDesc" class="modal-desc"></p>
-                <div id="modalTech" class="modal-tech"></div>
-                <div id="modalCert" class="modal-cert"></div>
-                <div class="modal-actions">
-                    <a id="modalInsta" href="#" target="_blank" class="insta-link" rel="noopener">
-                        <svg class="insta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="2" width="20" height="20" rx="5"/>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                            <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
-                        </svg>
-                        <span class="insta-text">Instagram</span>
-                    </a>
-                    <button id="modalOrderBtn" class="order-btn">Заказать</button>
+            <h3 id="modalName" class="modal-name"></h3>
+            <p id="modalDesc" class="modal-desc"></p>
+            <div class="modal-info-block">
+                <strong>Вес:</strong>
+                <span id="modalWeight"></span>
+            </div>
+            <div class="modal-info-block composition-block">
+                <strong>Состав:</strong>
+                <ul class="ingredients-list" id="compositionList"></ul>
+            </div>
+            <div class="macro-block">
+                <h4>Пищевая ценность на 100 г:</h4>
+                <div class="macro-grid">
+                    <div class="macro-item">
+                        <span class="macro-label">Калории</span>
+                        <span class="macro-value" id="modalCalories"></span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-label">Белки</span>
+                        <span class="macro-value" id="modalProteins"></span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-label">Жиры</span>
+                        <span class="macro-value" id="modalFats"></span>
+                    </div>
+                    <div class="macro-item">
+                        <span class="macro-label">Углеводы</span>
+                        <span class="macro-value" id="modalCarbs"></span>
+                    </div>
                 </div>
             </div>
+            <div id="modalTech" class="modal-tech"></div>
+            <div id="modalCert" class="modal-cert"></div>
         </div>
     </div>
 </div>
-{% endblock %} <!-- Закрытие блока content -->
+{% endblock %}
 
 {% block extra_css %}
-<style>
-/* --- Стили для страницы поиска --- */
-.search-container {
-    max-width: 1400px;
-    margin: 40px auto;
-    padding: 0 20px;
-}
-.search-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-.search-title {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 12px;
-    line-height: 1.3;
-}
-.search-title-main {
-    display: block;
-    color: #1e293b;
-}
-.search-title-query, .search-title-sub {
-    display: block;
-    font-size: 1.3rem;
-    font-weight: 600;
-    background: linear-gradient(90deg, #2563eb, #22c55e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-.search-stats {
-    font-size: 1rem;
-    color: #64748b;
-    font-weight: 500;
-    margin-top: 10px;
-}
-.stats-number {
-    font-weight: 700;
-    color: #2563eb;
-}
-
-/* --- Сетка продуктов (5x5) --- */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 25px;
-    margin-bottom: 40px;
-}
-
-/* --- Карточка продукта --- */
-.product-card {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    border: 1px solid #e0e0e0;
-    cursor: pointer; /* Добавлен курсор */
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.12);
-    border-color: #2563eb;
-}
-
-/* --- Изображение продукта --- */
-.product-img-wrap {
-    width: 100%;
-    aspect-ratio: 1 / 1; /* Квадратное соотношение сторон */
-    overflow: hidden;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.product-img-mini {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-
-.product-card:hover .product-img-mini {
-    transform: scale(1.05);
-}
-
-.product-img-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f8fafc;
-    font-size: 2rem; /* Размер иконки-заглушки */
-}
-
-.placeholder-icon {
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-}
-
-/* --- Контент продукта --- */
-.product-content {
-    padding: 15px 10px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    text-align: center;
-}
-
-.product-name {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1e293b;
-    transition: color 0.2s ease;
-    line-height: 1.3;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.product-card:hover .product-name {
-    color: #2563eb;
-}
-
-/* --- Сообщение "Ничего не найдено" (стилизованное) --- */
-.no-results {
-    grid-column: 1 / -1;
-    grid-row: 1 / -1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
-    padding: 20px;
-    background: linear-gradient(120deg, #f0f9ff 0%, #e6fffa 100%);
-    border-radius: 20px;
-}
-
-.no-results-wrapper {
-    text-align: center;
-    max-width: 500px;
-    padding: 40px 20px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-}
-
-.no-results-icon {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    opacity: 0.8;
-}
-
-.no-results-title {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 15px;
-}
-
-.no-results-text {
-    font-size: 1rem;
-    color: #64748b;
-    margin: 0 auto 25px;
-    line-height: 1.6;
-}
-
-/* --- Действия при отсутствии результатов --- */
-.no-results-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-.no-results-button {
-    display: inline-block;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-    border: none;
-    cursor: pointer;
-    font-size: 0.95rem;
-}
-
-.no-results-button.primary {
-    background: linear-gradient(90deg, #2563eb, #22c55e);
-    color: white;
-}
-
-.no-results-button.primary:hover {
-    background: linear-gradient(90deg, #1d4ed8, #16a34a);
-    box-shadow: 0 5px 12px rgba(37, 99, 235, 0.25);
-    transform: translateY(-2px);
-}
-
-.no-results-button.secondary {
-    background: #f1f5f9;
-    color: #334155;
-    border: 1px solid #cbd5e1;
-}
-
-.no-results-button.secondary:hover {
-    background: #e2e8f0;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-}
-
-/* --- Пагинация --- */
-.pagination-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    margin-bottom: 40px;
-}
-
-.pagination {
-    display: flex;
-    list-style: none;
-    gap: 4px;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-}
-
-.pagination li {
-    /* display: inline-block; */
-}
-
-.page-link {
-    display: block;
-    padding: 8px 14px;
-    text-decoration: none;
-    color: #2563eb;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    transition: all 0.2s ease-in-out;
-    font-size: 0.9rem;
-}
-
-.page-link:hover {
-    background-color: #e0f2fe;
-    border-color: #2563eb;
-    color: #1d4ed8;
-}
-
-.page-link.current {
-    background-color: #2563eb;
-    color: white;
-    border-color: #2563eb;
-    cursor: default;
-}
-
-/* --- Модальное окно (скопировано из products.html) --- */
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 2000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.modal.show {
-    opacity: 1;
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 1;
-    cursor: pointer;
-}
-
-.modal-content {
-    background: #fff;
-    border-radius: 18px;
-    max-width: 90vw;
-    width: 100%;
-    max-width: 500px;
-    padding: 0;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-    position: relative;
-    animation: modalIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 2;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-}
-
-@keyframes modalIn {
-    from {
-        transform: scale(0.8) translateY(40px);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
-}
-
-.modal-close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 2.2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #aaa;
-    transition: all 0.2s ease;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    z-index: 3;
-}
-
-.modal-close:hover, .modal-close:focus {
-    color: #e74c3c;
-    background-color: rgba(231, 76, 60, 0.1);
-    outline: none;
-}
-
-/* --- Содержимое модального окна --- */
-.modal-body {
-    padding: 30px;
-    overflow-y: auto;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* --- Спиннер загрузки --- */
-.modal-spinner {
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 0;
-}
-
-.spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(46, 204, 113, 0.2);
-    border-top: 4px solid #2ecc71;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* --- Изображение в модальном окне --- */
-.modal-img-modal-wrap {
-    text-align: center;
-    margin-bottom: 25px;
-    flex-shrink: 0;
-}
-
-.modal-img-modal-wrap img {
-    max-width: 100%;
-    max-height: 300px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.15);
-    display: block;
-    margin: 0 auto;
-    object-fit: cover;
-}
-
-/* --- Текст в модальном окне --- */
-.modal-text-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.modal-name {
-    margin: 0 0 15px 0;
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: #2c3e50;
-    text-align: center;
-}
-
-.modal-desc {
-    margin: 0 0 20px 0;
-    color: #555;
-    line-height: 1.6;
-    font-size: 1.05rem;
-}
-
-.modal-tech {
-    background: #f8f9fa;
-    border-left: 4px solid #2ecc71;
-    border-radius: 0 8px 8px 0;
-    padding: 15px;
-    margin-bottom: 20px;
-    font-size: 0.95rem;
-    color: #444;
-    line-height: 1.6;
-}
-
-.modal-cert {
-    margin-bottom: 25px;
-    text-align: center;
-}
-
-.cert-link {
-    color: #2980b9;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 15px;
-    border-radius: 20px;
-    background: #e3f2fd;
-    transition: all 0.2s ease;
-    border: 1px solid #bbdefb;
-}
-
-.cert-link:hover, .cert-link:focus {
-    background: #bbdefb;
-    color: #1565c0;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 8px rgba(41, 128, 185, 0.2);
-    outline: none;
-}
-
-.cert-icon {
-    font-size: 1.2rem;
-}
-
-/* --- Действия в модальном окне --- */
-.modal-actions {
-    display: flex;
-    gap: 15px;
-    margin-top: auto;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.insta-link {
-    color: #e1306c;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 30px;
-    background: #fce4ec;
-    transition: all 0.25s ease;
-    border: 1px solid #f8bbd0;
-}
-
-.insta-link:hover, .insta-link:focus {
-    background: #f8bbd0;
-    color: #c13584;
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(225, 48, 108, 0.2);
-    outline: none;
-}
-
-.insta-icon {
-    transition: transform 0.2s ease;
-}
-
-.insta-link:hover .insta-icon {
-    transform: scale(1.1);
-}
-
-.order-btn {
-    background: linear-gradient(90deg, #2ecc71, #27ae60);
-    color: #fff;
-    font-weight: 700;
-    border: none;
-    border-radius: 30px;
-    padding: 12px 30px;
-    font-size: 1.05rem;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2);
-    transition: all 0.3s ease;
-    flex-grow: 1;
-    min-width: 150px;
-}
-
-.order-btn:hover, .order-btn:focus {
-    background: linear-gradient(90deg, #27ae60, #219653);
-    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3);
-    transform: translateY(-3px) scale(1.03);
-    outline: none;
-}
-
-/* --- Адаптивность --- */
-@media (max-width: 1300px) {
-    .product-grid {
-        grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(4, 1fr);
-    }
-}
-@media (max-width: 1100px) {
-    .product-grid {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-    }
-}
-@media (max-width: 900px) {
-    .search-container {
-        margin: 30px auto;
-        padding: 0 15px;
-    }
-    .search-title {
-        font-size: 1.7rem;
-    }
-    .search-title-query, .search-title-sub {
-        font-size: 1.1rem;
-    }
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(2, 1fr);
-        gap: 20px;
-    }
-    .product-content {
-        padding: 12px 8px;
-    }
-    .product-name {
-        font-size: 0.95rem;
-    }
-    .no-results {
-        padding: 20px 10px;
-    }
-    .no-results-wrapper {
-        padding: 30px 15px;
-    }
-    .no-results-title {
-        font-size: 1.4rem;
-    }
-}
-@media (max-width: 600px) {
-    .search-title {
-        font-size: 1.5rem;
-    }
-    .search-title-query, .search-title-sub {
-        font-size: 1rem;
-    }
-    .search-stats {
-        font-size: 0.9rem;
-    }
-    .product-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-    }
-    .product-card {
-        max-width: 350px;
-        margin: 0 auto;
-    }
-    .product-img-wrap {
-        aspect-ratio: 16 / 9;
-    }
-    .no-results-wrapper {
-        padding: 20px 10px;
-    }
-    .no-results-title {
-        font-size: 1.2rem;
-    }
-    .no-results-text {
-        font-size: 0.9rem;
-    }
-    .pagination li {
-        margin: 0 1px;
-    }
-    .page-link {
-        padding: 6px 10px;
-        font-size: 0.8rem;
-    }
-    .no-results-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    .no-results-button {
-        width: 100%;
-        max-width: 250px;
-    }
-    .modal-content {
-        max-width: 95vw;
-        margin: 10px;
-    }
-    .modal-body {
-        padding: 25px 20px;
-    }
-    .modal-name {
-        font-size: 1.4rem;
-    }
-    .modal-desc {
-        font-size: 1rem;
-    }
-    .modal-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    .insta-link, .order-btn {
-        width: 100%;
-        justify-content: center;
-    }
-}
-
-/* --- Стили для страницы поиска (адаптированная для мобильных) --- */
-.search-container {
-    max-width: 1400px; /* Увеличен максимальный размер контейнера */
-    margin: 40px auto;
-    padding: 0 20px;
-}
-
-.search-header {
-    text-align: center;
-    margin-bottom: 50px;
-}
-
-.search-title {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #2c3e50;
-    margin-bottom: 15px;
-    letter-spacing: -0.5px;
-    line-height: 1.3;
-}
-
-.search-title-main {
-    display: block;
-    color: #1e293b;
-}
-
-.search-title-query, .search-title-sub {
-    display: block;
-    font-size: 1.4rem;
-    font-weight: 600;
-    background: linear-gradient(90deg, #2563eb, #22c55e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.search-stats {
-    font-size: 1.1rem;
-    color: #64748b;
-    font-weight: 500;
-    margin-top: 20px;
-}
-
-.stats-number {
-    font-weight: 700;
-    color: #2563eb;
-}
-
-/* --- Сетка продуктов --- */
-.product-grid {
-    display: grid;
-    /* Адаптивная сетка: от 1 до 5 колонок */
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
-}
-
-/* --- Карточка продукта --- */
-.product-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(25px) scale(0.95);
-    animation: cardEnter 0.6s forwards;
-    animation-delay: calc(var(--i) * 0.1s);
-    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    position: relative;
-    isolation: isolate; /* Создаем новый stacking context для z-index */
-    cursor: pointer; /* Указываем, что карточка кликабельна */
-}
-
-@keyframes cardEnter {
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.product-card:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 16px 32px rgba(37, 99, 235, 0.15);
-}
-
-/* --- Изображение продукта --- */
-.product-image-container {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-}
-
-.product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.product-card:hover .product-image {
-    transform: scale(1.08);
-}
-
-.product-image-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f1f5f9;
-}
-
-.placeholder-icon {
-    font-size: 2.5rem;
-    text-align: center;
-    color: #cbd5e1;
-}
-
-/* --- Информация о продукте --- */
-.product-info {
-    padding: 22px;
-}
-
-.product-name {
-    margin: 0 0 12px;
-    font-size: 1.35rem;
-    font-weight: 700;
-    color: #1e293b;
-    transition: color 0.3s ease;
-}
-
-.product-card:hover .product-name {
-    color: #2563eb;
-}
-
-.product-description {
-    font-size: 0.95rem;
-    color: #64748b;
-    line-height: 1.5;
-    margin-bottom: 18px;
-}
-
-/* --- Мета-информация о продукте --- */
-.product-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.product-category {
-    background-color: #dbeafe;
-    color: #1d4ed8;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-}
-
-.product-price {
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: #1e293b;
-}
-
-/* --- Ссылка "Подробнее" --- */
-.product-link {
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    background: linear-gradient(90deg, #2563eb, #22c55e);
-    color: white;
-    font-weight: 600;
-    padding: 12px;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
-    letter-spacing: 0.5px;
-}
-
-.product-link:hover {
-    background: linear-gradient(90deg, #1d4ed8, #16a34a);
-    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-    transform: translateY(-2px) scale(1.03);
-}
-
-/* --- Сообщение "Ничего не найдено" (стилизованное) --- */
-.no-results {
-    grid-column: 1 / -1; /* Занимает всю ширину сетки */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
-    padding: 20px;
-    background: linear-gradient(120deg, #f0f9ff 0%, #e6fffa 100%);
-    border-radius: 20px;
-    margin-top: 20px;
-}
-
-.no-results-wrapper {
-    text-align: center;
-    max-width: 500px;
-    padding: 40px 20px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-}
-
-.no-results-icon {
-    font-size: 4rem;
-    margin-bottom: 20px;
-    opacity: 0.7;
-}
-
-.no-results-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #334155;
-    margin-bottom: 15px;
-}
-
-.no-results-text {
-    font-size: 1.1rem;
-    color: #64748b;
-    max-width: 500px;
-    margin: 0 auto 25px;
-    line-height: 1.6;
-}
-
-.no-results-button {
-    display: inline-block;
-    background: linear-gradient(90deg, #2563eb, #22c55e);
-    color: white;
-    font-weight: 600;
-    padding: 12px 30px;
-    border-radius: 12px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
-}
-
-.no-results-button:hover {
-    background: linear-gradient(90deg, #1d4ed8, #16a34a);
-    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
-    transform: translateY(-2px);
-}
-
-/* --- Пагинация --- */
-.pagination-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-    margin-bottom: 40px;
-}
-
-.pagination {
-    display: flex;
-    list-style: none;
-    gap: 5px;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-}
-
-.pagination li {
-    /* display: inline-block; */
-}
-
-.page-link {
-    display: block;
-    padding: 10px 16px;
-    text-decoration: none;
-    color: #2563eb;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-}
-
-.page-link:hover {
-    background-color: #e0f2fe;
-    border-color: #2563eb;
-    color: #1d4ed8;
-}
-
-.page-link.current {
-    background-color: #2563eb;
-    color: white;
-    border-color: #2563eb;
-    cursor: default;
-}
-
-/* --- Адаптивность --- */
-@media (max-width: 1200px) {
-    .search-container {
-        margin: 70px auto;
-        padding: 0 15px;
-    }
-    .search-title {
-        font-size: 2.3rem;
-    }
-    .search-title-query, .search-title-sub {
-        font-size: 1.3rem;
-    }
-    .search-stats {
-        font-size: 1.05rem;
-    }
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 25px;
-    }
-    .product-image-container {
-        height: 200px;
-    }
-    .product-info {
-        padding: 20px 18px;
-    }
-    .product-name {
-        font-size: 1.25rem;
-    }
-    .product-description {
-        font-size: 0.9rem;
-    }
-    .product-meta {
-        gap: 8px;
-    }
-    .product-category {
-        font-size: 0.75rem;
-        padding: 4px 10px;
-    }
-    .product-price {
-        font-size: 1.1rem;
-    }
-    .product-link {
-        padding: 10px;
-        font-size: 0.95rem;
-    }
-    .no-results {
-        padding: 50px 18px;
-    }
-    .no-results-wrapper {
-        padding: 35px 18px;
-    }
-    .no-results-title {
-        font-size: 1.6rem;
-    }
-    .no-results-text {
-        font-size: 1.05rem;
-    }
-    .no-results-button {
-        padding: 10px 25px;
-        font-size: 0.95rem;
-    }
-    .pagination-wrapper {
-        margin-top: 35px;
-        margin-bottom: 35px;
-    }
-    .pagination li {
-        margin: 0 2px;
-    }
-    .page-link {
-        padding: 8px 14px;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 992px) {
-    .search-container {
-        margin: 60px auto;
-        padding: 0 12px;
-    }
-    .search-title {
-        font-size: 2.1rem;
-    }
-    .search-title-query, .search-title-sub {
-        font-size: 1.2rem;
-    }
-    .search-stats {
-        font-size: 1rem;
-    }
-    .section-divider {
-        width: 70px;
-        height: 3px;
-    }
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-    }
-    .product-card {
-        border-radius: 18px;
-    }
-    .product-image-container {
-        height: 180px;
-    }
-    .product-info {
-        padding: 18px 16px;
-    }
-    .product-name {
-        font-size: 1.2rem;
-    }
-    .product-description {
-        font-size: 0.85rem;
-        margin-bottom: 15px;
-    }
-    .product-meta {
-        gap: 6px;
-        margin-bottom: 15px;
-    }
-    .product-category {
-        font-size: 0.7rem;
-        padding: 3px 8px;
-    }
-    .product-price {
-        font-size: 1rem;
-    }
-    .product-link {
-        padding: 8px;
-        font-size: 0.9rem;
-    }
-    .no-results {
-        padding: 45px 16px;
-    }
-    .no-results-wrapper {
-        padding: 30px 16px;
-    }
-    .no-results-title {
-        font-size: 1.5rem;
-    }
-    .no-results-text {
-        font-size: 1rem;
-    }
-    .no-results-button {
-        padding: 8px 20px;
-        font-size: 0.9rem;
-    }
-    .pagination-wrapper {
-        margin-top: 30px;
-        margin-bottom: 30px;
-    }
-    .pagination li {
-        margin: 0 1px;
-    }
-    .page-link {
-        padding: 6px 12px;
-        font-size: 0.85rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .search-container {
-        margin: 50px auto;
-        padding: 0 10px;
-    }
-    .search-title {
-        font-size: 1.9rem;
-    }
-    .search-title-query, .search-title-sub {
-        font-size: 1.1rem;
-    }
-    .search-stats {
-        font-size: 0.95rem;
-    }
-    .section-divider {
-        width: 60px;
-        height: 3px;
-    }
-    /* На мобильных используем 2 колонки */
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 18px;
-    }
-    .product-card {
-        border-radius: 16px;
-    }
-    .product-image-container {
-        height: 160px;
-    }
-    .product-info {
-        padding: 16px 14px;
-    }
-    .product-name {
-        font-size: 1.1rem;
-        margin-bottom: 10px;
-    }
-    .product-description {
-        font-size: 0.8rem;
-        margin-bottom: 12px;
-    }
-    .product-meta {
-        gap: 5px;
-        margin-bottom: 12px;
-    }
-    .product-category {
-        font-size: 0.65rem;
-        padding: 2px 6px;
-    }
-    .product-price {
-        font-size: 0.9rem;
-    }
-    .product-link {
-        padding: 6px;
-        font-size: 0.85rem;
-    }
-    .no-results {
-        padding: 40px 14px;
-        border-radius: 18px;
-    }
-    .no-results-wrapper {
-        padding: 25px 14px;
-    }
-    .no-results-title {
-        font-size: 1.4rem;
-    }
-    .no-results-text {
-        font-size: 0.95rem;
-    }
-    .no-results-button {
-        padding: 6px 18px;
-        font-size: 0.85rem;
-    }
-    .pagination-wrapper {
-        margin-top: 25px;
-        margin-bottom: 25px;
-    }
-    .pagination li {
-        margin: 0;
-    }
-    .page-link {
-        padding: 5px 10px;
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .search-container {
-        margin: 40px auto;
-        padding: 0 8px;
-    }
-    .search-title {
-        font-size: 1.7rem;
-    }
-    .search-title-query, .search-title-sub {
-        font-size: 1rem;
-    }
-    .search-stats {
-        font-size: 0.9rem;
-    }
-    .section-divider {
-        width: 50px;
-        height: 2px;
-    }
-    /* На очень маленьких экранах 2 колонки по 140px минимум */
-    .product-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 15px;
-    }
-    .product-card {
-        border-radius: 14px;
-    }
-    .product-image-container {
-        height: 140px;
-    }
-    .product-info {
-        padding: 14px 12px;
-    }
-    .product-name {
-        font-size: 1rem;
-        margin-bottom: 8px;
-    }
-    .product-description {
-        font-size: 0.75rem;
-        margin-bottom: 10px;
-    }
-    .product-meta {
-        gap: 4px;
-        margin-bottom: 10px;
-    }
-    .product-category {
-        font-size: 0.6rem;
-        padding: 2px 5px;
-    }
-    .product-price {
-        font-size: 0.85rem;
-    }
-    .product-link {
-        padding: 5px;
-        font-size: 0.8rem;
-    }
-    .no-results {
-        padding: 35px 12px;
-        border-radius: 16px;
-    }
-    .no-results-wrapper {
-        padding: 20px 12px;
-    }
-    .no-results-title {
-        font-size: 1.3rem;
-    }
-    .no-results-text {
-        font-size: 0.9rem;
-    }
-    .no-results-button {
-        padding: 5px 16px;
-        font-size: 0.8rem;
-    }
-    .pagination-wrapper {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-    .pagination li {
-        margin: 0;
-    }
-    .page-link {
-        padding: 4px 8px;
-        font-size: 0.75rem;
-    }
-    .placeholder-icon {
-        font-size: 2rem;
-    }
-}
-</style>
+<link href="{% static 'assets/css/search_results.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block extra_js %}
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    // --- Логика модального окна (скопирована из products.html) ---
-    const modal = document.getElementById('productModal');
-    const modalSpinner = document.getElementById('modalSpinner');
-    const modalImg = document.getElementById('modalImg');
-    const modalName = document.getElementById('modalName');
-    const modalDesc = document.getElementById('modalDesc');
-    const modalTech = document.getElementById('modalTech');
-    const modalCert = document.getElementById('modalCert');
-    const modalInsta = document.getElementById('modalInsta');
-    const modalOrderBtn = document.getElementById('modalOrderBtn');
-    const modalClose = document.querySelector('.modal-close');
-    const modalOverlay = document.querySelector('.modal-overlay');
-    const productCards = document.querySelectorAll('.product-card');
-
-    // Функция для открытия модального окна с анимацией
-    function openModal() {
-        modal.style.display = 'flex';
-        setTimeout(() => {
-            modal.classList.add('show');
-        }, 10);
-    }
-
-    // Функция для закрытия модального окна с анимацией
-    function closeModal() {
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300);
-    }
-
-    // Функция для отображения данных продукта в модальном окне
-    function showProductModal(data) {
-        modalName.textContent = data.name;
-        modalDesc.textContent = data.description;
-        modalTech.innerHTML = data.technology ? `<strong>Технология:</strong><br>${data.technology}` : '';
-        modalImg.src = data.image || '';
-        modalImg.alt = data.name;
-        modalImg.style.display = data.image ? 'block' : 'none';
-
-        if (data.certificate) {
-            modalCert.innerHTML = `
-                <a href="${data.certificate}" target="_blank" class="cert-link" rel="noopener">
-                    <span class="cert-icon">📜</span>
-                    <span class="cert-text">Сертификат качества</span>
-                </a>
-            `;
-            modalCert.style.display = 'block';
-        } else {
-            modalCert.innerHTML = '';
-            modalCert.style.display = 'none';
-        }
-
-        if (data.instagram) {
-            modalInsta.href = data.instagram;
-            modalInsta.style.display = 'inline-flex';
-        } else {
-            modalInsta.style.display = 'none';
-        }
-
-        modalOrderBtn.onclick = function () {
-            closeModal();
-            const contactForm = document.getElementById('contactForm'); // Предполагается, что форма есть
-            if (contactForm) {
-                contactForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                const subjectInput = contactForm.querySelector('input[name="subject"]');
-                if (subjectInput) {
-                    subjectInput.value = `Заказ: ${data.name}`;
-                }
-                const nameInput = contactForm.querySelector('input[name="name"]');
-                if (nameInput) {
-                    nameInput.focus();
-                }
-            }
-        };
-
-        openModal();
-    }
-
-    // Функция для отображения спиннера загрузки
-    function showSpinner() {
-        modalSpinner.style.display = 'flex';
-        document.querySelector('.modal-img-modal-wrap').style.display = 'none';
-        document.querySelector('.modal-text-content').style.display = 'none';
-    }
-
-    // Функция для скрытия спиннера
-    function hideSpinner() {
-        modalSpinner.style.display = 'none';
-        document.querySelector('.modal-img-modal-wrap').style.display = 'block';
-        document.querySelector('.modal-text-content').style.display = 'flex';
-    }
-
-    // Обработчик клика по карточке продукта
-    productCards.forEach(function (card) {
-        card.addEventListener('click', function () {
-            const slug = this.getAttribute('data-slug');
-            if (!slug) return;
-
-            showSpinner();
-            openModal();
-
-            fetch(`/products/${slug}/json/`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    hideSpinner();
-                    showProductModal(data);
-                })
-                .catch(error => {
-                    console.error('Ошибка при загрузке данных продукта:', error);
-                    hideSpinner();
-                    modalName.textContent = 'Ошибка загрузки';
-                    modalDesc.textContent = 'Не удалось загрузить информацию о продукте. Пожалуйста, попробуйте позже.';
-                    modalTech.innerHTML = '';
-                    modalImg.style.display = 'none';
-                    modalCert.style.display = 'none';
-                    modalInsta.style.display = 'none';
-                    modalOrderBtn.style.display = 'none';
-                });
-        });
-
-        // Добавляем поддержку клавиатуры (Enter и Space)
-        card.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                this.click();
-            }
-        });
-    });
-
-    // Обработчики закрытия модального окна
-    modalClose.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', closeModal);
-
-    // Закрытие по клавише Escape
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && modal.classList.contains('show')) {
-            closeModal();
-        }
-    });
-
-    // Предотвращаем закрытие модального окна при клике внутри него
-    document.querySelector('.modal-content').addEventListener('click', function(e) {
-        e.stopPropagation();
-    });
-});
-</script>
+<script src="{% static 'assets/js/search_results.js' %}"></script>
 {% endblock %}

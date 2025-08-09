@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import HomeView, ProductListView, ProductDetailView, ProductDetailJsonView, CertificateView, \
-    SearchProductsView, ReviewsListView, ContactAjaxView
+    SearchProductsView, ReviewsListView, ContactAjaxView, ManifestView
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
@@ -14,4 +14,5 @@ urlpatterns = [
     path('terms/', HomeView.as_view(), name='terms'),
     path('contact/', ContactAjaxView.as_view(), name='contact_ajax'),
     path('reviews/', ReviewsListView.as_view(), name='reviews_list'),
+    path('manifest.json', ManifestView.as_view(), name='manifest'),
 ]
