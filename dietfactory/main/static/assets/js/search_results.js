@@ -108,6 +108,6 @@ document.addEventListener('DOMContentLoaded', function () {
     modalOverlay.addEventListener('click', closeModal);
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
-    });
+    });['msmtp', 'saparbegov-01@yandex.com']
     document.querySelector('.modal-content').addEventListener('click', e => e.stopPropagation());
 });

@@ -1,8 +1,8 @@
 import json
-import subprocess
 import traceback
 
-from django.conf import settings
+import requests
+from decouple import config
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models.functions import Lower
@@ -19,8 +19,10 @@ from .forms import ReviewForm
 from .models import Product, Certificate, GalleryImage, Exclusion
 from .models import Review
 
-
 # Create your views here.
+
+TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID')
 
 
 class HomeView(TemplateView):
@@ -81,76 +83,51 @@ class ProductListView(ListView):
 
 class ContactAjaxView(View):
     def post(self, request, *args, **kwargs):
-        print("=== Начало обработки POST запроса ===")
-        print("Content-Type:", request.content_type)
-        print("Raw body:", request.body)
-
         try:
             data = json.loads(request.body)
-            print("Parsed ", data)
         except json.JSONDecodeError:
-            print("❌ Ошибка парсинга JSON")
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
         form = ContactForm(data)
-
         if form.is_valid():
-            print("✅ Форма валидна")
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
 
-            email_body = (
-                f"✉️ Новое сообщение с сайта\n"
-                f"━━━━━━━━━━━━━━━━━━━━\n"
-                f"👤 Имя: {name}\n"
-                f"📧 Email: {email}\n"
-                f"📝 Тема: {subject}\n"
-                f"━━━━━━━━━━━━━━━━━━━━\n"
-                f"💬 Сообщение:\n{message}"
-            )
-            print(f"📧 Отправляем на: {settings.EMAIL_ADMIN}")
-
             try:
-                print("📩 Начинаем отправку email через msmtp...")
-
-                # Формируем письмо
-                mail_content = (
-                    f"To: {settings.EMAIL_ADMIN}\n"
-                    f"From: {settings.DEFAULT_FROM_EMAIL}\n"
-                    f"Subject: Сообщение с сайта: {subject}\n"
-                    f"Content-Type: text/plain; charset=utf-8\n"
-                    f"\n"
-                    f"{email_body}"
+                tg_message = (
+                    f"📩 <b>Новое сообщение с сайта</b>\n"
+                    f"<b>👤 Имя:</b> {name}\n"
+                    f"<b>📧 Email:</b> {email}\n"
+                    f"<b>📝 Тема:</b> {subject}\n"
+                    f"<b>💬 Сообщение:</b> {message}\n"
+                    f"-----------------------------------\n"
                 )
 
-                # Вызываем msmtp
-                result = subprocess.run(
-                    ['msmtp', settings.EMAIL_ADMIN],
-                    input=mail_content,
-                    text=True,
-                    capture_output=True,
+                # URL для отправки через Telegram Bot API
+                tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+                requests.post(
+                    tg_url,
+                    data={
+                        'chat_id': TELEGRAM_CHAT_ID,
+                        'text': tg_message,
+                        'parse_mode': 'HTML'
+                    },
                     timeout=10
                 )
 
-                if result.returncode == 0:
-                    print("✅ Письмо успешно отправлено через msmtp")
-                    return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
-                else:
-                    print(f"❌ Ошибка msmtp: {result.stderr}")
-                    return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
+                print('✅ Письмо и Telegram-уведомление отправлены')
+                return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
 
-            except subprocess.TimeoutExpired:
-                print("❌ Ошибка: таймаут отправки")
-                return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
             except Exception as e:
-                print(f"❌ Ошибка при отправке email: {type(e).__name__}: {e}")
+                print(f"❌ Ошибка отправки: {e}")
                 traceback.print_exc()
                 return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
+
         else:
-            print("❌ Форма невалидна. Ошибки:", form.errors)
             return JsonResponse({'success': False, 'message': 'Проверьте правильность заполнения формы.'})
+
 
 class ProductDetailView(DetailView):
     model = Product
@@ -232,12 +209,12 @@ class ManifestView(View):
             "theme_color": "#2ecc71",
             "icons": [
                 {
-                    "src": request.build_absolute_uri("/static/assets/manifest/icon-192x192.png"),
+                    "src": request.build_absolute_uri("/static/assets/img/apple-touch-icon.png"),
                     "sizes": "192x192",
                     "type": "image/png"
                 },
                 {
-                    "src": request.build_absolute_uri("/static/assets/manifest/icon-512x512.png"),
+                    "src": request.build_absolute_uri("/static/assets/img/apple-touch-icon.png"),
                     "sizes": "512x512",
                     "type": "image/png"
                 }

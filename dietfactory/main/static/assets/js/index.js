@@ -409,29 +409,34 @@ window.FitAudit = {
     }
 };
 
-
 document.getElementById('contactForm').addEventListener('submit', function (e) {
     e.preventDefault();
+
     const formData = new FormData(this);
-    const data = Object.fromEntries(formData); // Преобразуем в объект
+    const data = Object.fromEntries(formData);
+    data['csrfmiddlewaretoken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
     fetch('/contact/', {
         method: 'POST',
         headers: {
+            'Content-Type': 'application/json',
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'Content-Type': 'application/json',  // ← Обязательно!
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
     })
-        .then(response => response.json())
-        .then(data => {
-            const msgBox = document.getElementById('contactFormMsg');
-            msgBox.textContent = data.message;
-            msgBox.className = data.success ? 'form-message success' : 'form-message error';
-        })
-        .catch(err => {
-            console.error('Ошибка отправки:', err);
-            document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
-        });
-});
+    .then(response => response.json())
+    .then(data => {
+        const msgBox = document.getElementById('contactFormMsg');
+        msgBox.textContent = data.message;
+        msgBox.className = data.success ? 'form-message success show' : 'form-message error show';
 
+        if (data.success) {
+            this.reset();
+        }
+    })
+    .catch(err => {
+        console.error('Ошибка:', err);
+        document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
+        document.getElementById('contactFormMsg').className = 'form-message error show';
+    });
+});

@@ -131,17 +131,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Email
-EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+EMAIL_BACKEND = config('EMAIL_BACKEND')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS')
 
 # Эти поля НЕ используются при localhost, но нужны, чтобы не упасть при сборке
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='no-reply@yoursite.com')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # Адреса
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@yoursite.com')
-SERVER_EMAIL = config('SERVER_EMAIL', default='admin@yoursite.com')
-EMAIL_ADMIN = config('EMAIL_ADMIN', default='admin@yoursite.com')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_SERVER = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER

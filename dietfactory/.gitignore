@@ -1,28 +1,28 @@
 # Python
-__pycache__/
+__pycache__
 *.py[cod]
 *.pyo
 *.pyd
 *.pyc
 *.pdb
-*.egg-info/
+*.egg-info
 *.egg
 *.log
 
 # Environment
-env/
-venv/
-ENV/
-.venv/
+env
+venv
+ENV
+.venv
 .env
 
 
 # Django
 *.sqlite3
 db.sqlite3
-media/
-staticfiles/
-static_root/
+media
+staticfiles
+static_root
 local_settings.py
 
 # Migrations (можно не игнорировать, если ты хочешь их сохранять в репозитории)
@@ -30,29 +30,29 @@ local_settings.py
 # !*/migrations/__init__.py
 
 # VS Code
-.vscode/
+.vscode
 
 # PyCharm
-.idea/
+.idea
 *.iml
 
 # macOS
 .DS_Store
 
 # Coverage
-htmlcov/
+htmlcov
 .coverage
 
 # MyPy
-.mypy_cache/
+.mypy_cache
 
 # Celery
 celerybeat-schedule
 celerybeat.pid
 
 # pytest
-.pytest_cache/
-.cache/
+.pytest_cache
+.cache
 
 # Other
 *.swp
