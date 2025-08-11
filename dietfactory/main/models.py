@@ -4,6 +4,7 @@ import tempfile
 
 from PIL import Image
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
@@ -62,7 +63,6 @@ def optimize_image(image_field, max_size=(1200, 1200), quality=85):
     temp_file.close()
 
     return temp_file.name, img_format
-
 
 
 class Product(models.Model):
@@ -197,7 +197,6 @@ class Review(models.Model):
         return f"{self.name} — {self.created_at.strftime('%d.%m.%Y')}"
 
 
-
 @receiver(pre_save, sender=Review)
 def optimize_review_screenshot(sender, instance, **kwargs):
     if not instance.pk:  # Новый объект
@@ -229,15 +228,22 @@ def delete_review_screenshot(sender, instance, **kwargs):
         delete_file_if_exists(instance.screenshot)
 
 
+def validate_svg_or_png(value):
+    ext = os.path.splitext(value.name)[1].lower()
+    if ext not in ['.svg', '.png']:
+        raise ValidationError('Можно загружать только SVG или PNG.')
+
+
 class Exclusion(models.Model):
     name = models.CharField(
         'Название',
         max_length=50,
         help_text='Например: Сахара, Лактозы'
     )
-    icon = models.ImageField(
+    icon = models.FileField(
         'Иконка',
         upload_to='exclusions/',
+        validators=[validate_svg_or_png],
         help_text='SVG или PNG (рекомендуется 100x100)'
     )
     order = models.PositiveIntegerField(
