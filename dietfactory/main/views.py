@@ -206,12 +206,12 @@ class ManifestView(View):
             "theme_color": "#2ecc71",
             "icons": [
                 {
-                    "src": request.build_absolute_uri("/static/assets/img/apple-touch-icon.png"),
+                    "src": request.build_absolute_uri("/static/assets/img/android-touch-icon.png"),
                     "sizes": "192x192",
                     "type": "image/png"
                 },
                 {
-                    "src": request.build_absolute_uri("/static/assets/img/apple-touch-icon.png"),
+                    "src": request.build_absolute_uri("/static/assets/img/android-touch-icon.png"),
                     "sizes": "512x512",
                     "type": "image/png"
                 }
