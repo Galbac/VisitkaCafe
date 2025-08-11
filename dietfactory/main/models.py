@@ -1,5 +1,8 @@
 # models.py
 import os
+import tempfile
+
+from PIL import Image
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_delete, pre_save
@@ -7,8 +10,6 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from PIL import Image
-import tempfile
 
 
 # Универсальная функция удаления файла
@@ -63,9 +64,6 @@ def optimize_image(image_field, max_size=(1200, 1200), quality=85):
     return temp_file.name, img_format
 
 
-# === Остальные модели без изменений (Product, Certificate, GalleryImage) ===
-
-# models.py (обновлённая часть модели Product)
 
 class Product(models.Model):
     name = models.CharField('Название продукта', max_length=200)
@@ -85,7 +83,6 @@ class Product(models.Model):
     proteins = models.DecimalField('Белки (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
     fats = models.DecimalField('Жиры (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
     carbs = models.DecimalField('Углеводы (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
-
 
     class Meta:
         verbose_name = _("Продукт")
@@ -179,8 +176,6 @@ class GalleryImage(models.Model):
         return self.alt_text or f"Изображение #{self.pk}"
 
 
-# === Модель отзыва (с оптимизацией) ===
-
 class Review(models.Model):
     name = models.CharField("Имя", max_length=100)
     text = models.TextField("Текст отзыва", blank=True, null=True)
@@ -202,7 +197,6 @@ class Review(models.Model):
         return f"{self.name} — {self.created_at.strftime('%d.%m.%Y')}"
 
 
-# ✅ Сигналы ПОСЛЕ объявления модели Review
 
 @receiver(pre_save, sender=Review)
 def optimize_review_screenshot(sender, instance, **kwargs):

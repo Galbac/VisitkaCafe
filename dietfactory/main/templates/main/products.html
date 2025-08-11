@@ -14,34 +14,34 @@
 
         <div class="products-grid" id="productsGrid">
             {% for product in products %}
-                <div class="product-card" data-slug="{{ product.slug }}" tabindex="0">
-                    <div class="product-img-wrap">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img-mini" loading="lazy">
-                        {% else %}
-                            <div class="product-img-placeholder">
-                                <span class="placeholder-icon">🍲</span>
-                            </div>
-                        {% endif %}
+            <div class="product-card" data-slug="{{ product.slug }}" tabindex="0">
+                <div class="product-img-wrap">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img-mini" loading="lazy">
+                    {% else %}
+                    <div class="product-img-placeholder">
+                        <span class="placeholder-icon">🍲</span>
                     </div>
-                    <div class="product-content">
-                        <h3 class="product-name">{{ product.name }}</h3>
-                        <p class="product-desc">{{ product.description|truncatechars:40 }}</p>
-                        <div class="product-cta">
-                            <span class="cta-text">Подробнее</span>
-                            <span class="cta-icon">→</span>
-                        </div>
+                    {% endif %}
+                </div>
+                <div class="product-content">
+                    <h3 class="product-name">{{ product.name }}</h3>
+                    <p class="product-desc">{{ product.description|truncatechars:40 }}</p>
+                    <div class="product-cta">
+                        <span class="cta-text">Подробнее</span>
+                        <span class="cta-icon">→</span>
                     </div>
                 </div>
+            </div>
             {% empty %}
-                <div class="no-products">
-                    <div class="no-products-icon">📭</div>
-                    <h3 class="no-products-title">Продукты скоро появятся</h3>
-                    <p class="no-products-text">
-                        Следите за новостями в нашем
-                        <a href="https://www.instagram.com/eda__bez.vreda/" target="_blank" class="insta-link-simple">Instagram</a>.
-                    </p>
-                </div>
+            <div class="no-products">
+                <div class="no-products-icon">📭</div>
+                <h3 class="no-products-title">Продукты скоро появятся</h3>
+                <p class="no-products-text">
+                    Следите за новостями в нашем
+                    <a href="https://www.instagram.com/eda__bez.vreda/" target="_blank" class="insta-link-simple">Instagram</a>.
+                </p>
+            </div>
             {% endfor %}
         </div>
     </div>
@@ -98,7 +98,7 @@
 {% endblock %}
 
 {% block extra_css %}
-    <link href="{% static 'assets/css/products.css' %}" rel="stylesheet">
+<link href="{% static 'assets/css/products.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block extra_js %}

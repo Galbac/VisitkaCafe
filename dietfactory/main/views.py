@@ -19,7 +19,6 @@ from .forms import ReviewForm
 from .models import Product, Certificate, GalleryImage, Exclusion
 from .models import Review
 
-# Create your views here.
 
 TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
 TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID')
@@ -30,10 +29,8 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Получаем активные изображения галереи, отсортированные по полю order
         context['gallery_images'] = GalleryImage.objects.filter(is_active=True)
         context['exclusions'] = Exclusion.objects.all()
-        # ... (другой контекст, если есть) ...
         return context
 
 

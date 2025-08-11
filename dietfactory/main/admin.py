@@ -116,6 +116,7 @@ class CertificateAdmin(admin.ModelAdmin):
 
     admin_image_tag.short_description = _('Превью изображения')
 
+
 @admin.register(GalleryImage)
 class GalleryImageAdmin(admin.ModelAdmin):
     """
@@ -124,8 +125,8 @@ class GalleryImageAdmin(admin.ModelAdmin):
     list_display = ('admin_image_preview', 'alt_text', 'order', 'is_active', 'uploaded_at')
     list_filter = ('is_active', 'uploaded_at')
     search_fields = ('alt_text',)
-    list_editable = ('order', 'is_active') # Позволяет редактировать порядок и активность прямо в списке
-    readonly_fields = ('admin_image_tag', 'uploaded_at') # Поле uploaded_at только для чтения
+    list_editable = ('order', 'is_active')  # Позволяет редактировать порядок и активность прямо в списке
+    readonly_fields = ('admin_image_tag', 'uploaded_at')  # Поле uploaded_at только для чтения
 
     fieldsets = (
         (_('Основная информация'), {
@@ -133,7 +134,7 @@ class GalleryImageAdmin(admin.ModelAdmin):
         }),
         (_('Дополнительно'), {
             'fields': ('uploaded_at',),
-            'classes': ('collapse',) # Сворачиваем по умолчанию
+            'classes': ('collapse',)  # Сворачиваем по умолчанию
         }),
     )
 
@@ -144,6 +145,7 @@ class GalleryImageAdmin(admin.ModelAdmin):
                 f'<img src="{obj.image.url}" style="height: 50px; width: 50px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd;" title="{obj.alt_text or obj.image.name}">'
             )
         return "-"
+
     admin_image_preview.short_description = _('Изображение')
 
     def admin_image_tag(self, obj):
@@ -155,6 +157,7 @@ class GalleryImageAdmin(admin.ModelAdmin):
                 f'</a>'
             )
         return "-"
+
     admin_image_tag.short_description = _('Превью изображения')
 
 
@@ -167,11 +170,13 @@ class ReviewAdmin(admin.ModelAdmin):
 
     def has_text(self, obj):
         return bool(obj.text)
+
     has_text.boolean = True
     has_text.short_description = "Есть текст"
 
     def has_screenshot(self, obj):
         return bool(obj.screenshot)
+
     has_screenshot.boolean = True
     has_screenshot.short_description = "Есть скриншот"
 
@@ -189,6 +194,7 @@ class ExclusionAdmin(admin.ModelAdmin):
         if obj.icon:
             return f'<img src="{obj.icon.url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">'
         return '—'
+
     icon_preview.short_description = 'Превью'
     icon_preview.allow_tags = True  # Для Django < 4.2
 

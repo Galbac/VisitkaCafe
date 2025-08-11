@@ -1,5 +1,3 @@
-
-
 /* === Hero Section === */
 .hero-section {
     position: relative;
@@ -589,7 +587,6 @@
 }
 
 
-
 /* Анимация появления */
 .about-section.fresh.show .feature-card {
     opacity: 1;
@@ -723,16 +720,37 @@
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .features-title { font-size: 2.1rem; }
-    .feature-card { padding: 24px 16px; }
-    .feature-icon-wrapper { width: 60px; height: 60px; }
-    .feature-label { font-size: 1.15rem; }
+    .features-title {
+        font-size: 2.1rem;
+    }
+
+    .feature-card {
+        padding: 24px 16px;
+    }
+
+    .feature-icon-wrapper {
+        width: 60px;
+        height: 60px;
+    }
+
+    .feature-label {
+        font-size: 1.15rem;
+    }
 }
 
 @media (max-width: 480px) {
-    .features-title { font-size: 1.8rem; }
-    .feature-icon-wrapper { width: 50px; height: 50px; }
-    .feature-label { font-size: 1.05rem; }
+    .features-title {
+        font-size: 1.8rem;
+    }
+
+    .feature-icon-wrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .feature-label {
+        font-size: 1.05rem;
+    }
 }
 
 /* Галерея */

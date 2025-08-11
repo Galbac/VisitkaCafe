@@ -1,4 +1,3 @@
-// Main JavaScript file for FitAudit
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -298,7 +297,6 @@ window.FitAudit = {
         });
     }
 };
-
 
 
 // Закрытие при клике вне меню

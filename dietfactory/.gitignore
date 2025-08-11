@@ -25,10 +25,6 @@ staticfiles
 static_root
 local_settings.py
 
-# Migrations (можно не игнорировать, если ты хочешь их сохранять в репозитории)
-# */migrations/
-# !*/migrations/__init__.py
-
 # VS Code
 .vscode
 

@@ -14,61 +14,63 @@
         <!-- Список отзывов -->
         <div class="reviews-grid">
             {% for review in page_obj %}
-                <div class="review-card">
-                    <!-- Заголовок -->
-                    <div class="review-meta">
-                        <span class="review-name">{{ review.name }}</span>
-                        <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+            <div class="review-card">
+                <!-- Заголовок -->
+                <div class="review-meta">
+                    <span class="review-name">{{ review.name }}</span>
+                    <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+                </div>
+
+                <!-- Текст -->
+                {% if review.text %}
+                <p class="review-text">{{ review.text }}</p>
+                {% endif %}
+
+                <!-- Скриншот -->
+                {% if review.screenshot %}
+                <div class="review-image-wrapper">
+                    <img src="{{ review.screenshot.url }}" alt="Отзыв из Instagram" loading="lazy" class="review-image">
+                    <div class="insta-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="0.5">
+                            <rect x="2" y="2" width="20" height="20" rx="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="#fff"/>
+                            <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" stroke="#fff" stroke-width="2"
+                                  stroke-linecap="round"/>
+                        </svg>
                     </div>
-
-                    <!-- Текст -->
-                    {% if review.text %}
-                        <p class="review-text">{{ review.text }}</p>
-                    {% endif %}
-
-                    <!-- Скриншот -->
-                    {% if review.screenshot %}
-                        <div class="review-image-wrapper">
-                            <img src="{{ review.screenshot.url }}" alt="Отзыв из Instagram" loading="lazy" class="review-image">
-                            <div class="insta-badge">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" stroke="#fff" stroke-width="0.5">
-                                    <rect x="2" y="2" width="20" height="20" rx="5"/>
-                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" fill="#fff"/>
-                                    <line x1="17.5" y1="6.5" x2="17.5" y2="6.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                            </div>
-                        </div>
-                    {% endif %}
                 </div>
+                {% endif %}
+            </div>
             {% empty %}
-                <div class="no-reviews">
-                    <svg width="60" height="60" fill="none" stroke="#a0aec0" stroke-width="1.5" style="margin-bottom: 16px;">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    <p>Пока нет отзывов. Будьте первым, кто поделится впечатлениями!</p>
-                </div>
+            <div class="no-reviews">
+                <svg width="60" height="60" fill="none" stroke="#a0aec0" stroke-width="1.5"
+                     style="margin-bottom: 16px;">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <p>Пока нет отзывов. Будьте первым, кто поделится впечатлениями!</p>
+            </div>
             {% endfor %}
         </div>
 
         <!-- Пагинация -->
         {% if page_obj.has_other_pages %}
-            <div class="pagination">
-                {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-arrow"><</a>
-                {% endif %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-arrow"><</a>
+            {% endif %}
 
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                        <span class="pagination-current">{{ num }}</span>
-                    {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
-                        <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="pagination-current">{{ num }}</span>
+            {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+            <a href="?page={{ num }}" class="pagination-link">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
 
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}" class="pagination-arrow">></a>
-                {% endif %}
-            </div>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-arrow">></a>
+            {% endif %}
+        </div>
         {% endif %}
 
         <!-- КНОПКА "НАПИСАТЬ ОТЗЫВ" — ТЕПЕРЬ В САМОМ НИЗУ -->

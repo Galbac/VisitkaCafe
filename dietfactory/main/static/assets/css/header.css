@@ -145,6 +145,7 @@
     color: #27ae60;
     border-bottom-color: #27ae60;
 }
+
 /* --- Поиск --- */
 .header-search {
     display: flex;
@@ -238,17 +239,21 @@
     .header-flex {
         padding: 0 15px;
     }
+
     .logo-img {
         height: 36px;
         width: 36px;
     }
+
     .logo-title {
         font-size: 1.3rem;
     }
+
     .nav-list a {
         font-size: 0.95rem;
         padding: 5px 12px;
     }
+
     .header-search input[type="search"] {
         width: 120px;
         font-size: 0.9rem;

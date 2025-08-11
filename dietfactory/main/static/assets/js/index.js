@@ -1,5 +1,3 @@
-// Main JavaScript file for FitAudit
-
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- Общая логика сайта ---
@@ -424,19 +422,19 @@ document.getElementById('contactForm').addEventListener('submit', function (e) {
         },
         body: JSON.stringify(data),
     })
-    .then(response => response.json())
-    .then(data => {
-        const msgBox = document.getElementById('contactFormMsg');
-        msgBox.textContent = data.message;
-        msgBox.className = data.success ? 'form-message success show' : 'form-message error show';
+        .then(response => response.json())
+        .then(data => {
+            const msgBox = document.getElementById('contactFormMsg');
+            msgBox.textContent = data.message;
+            msgBox.className = data.success ? 'form-message success show' : 'form-message error show';
 
-        if (data.success) {
-            this.reset();
-        }
-    })
-    .catch(err => {
-        console.error('Ошибка:', err);
-        document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
-        document.getElementById('contactFormMsg').className = 'form-message error show';
-    });
+            if (data.success) {
+                this.reset();
+            }
+        })
+        .catch(err => {
+            console.error('Ошибка:', err);
+            document.getElementById('contactFormMsg').textContent = 'Ошибка соединения.';
+            document.getElementById('contactFormMsg').className = 'form-message error show';
+        });
 });
