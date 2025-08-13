@@ -18,8 +18,8 @@
         {% if products %}
         {% if paginator.count is not None %}
         <div class="search-stats">
-            Найдено: <span class="stats-number">{{ paginator.count }}</span> продукт{{ paginator.count|pluralize:"а,ов"
-            }}
+            Найдено: <span class="stats-number">{{ paginator.count }}</span>
+            продукт{{ paginator.count|pluralize:"а,ов" }}
             {% if is_paginated %}
             (Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }})
             {% endif %}

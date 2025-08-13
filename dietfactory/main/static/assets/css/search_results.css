@@ -12,6 +12,13 @@
     line-height: 1.3;
 }
 
+.main-content {
+    min-height: calc(100vh - 200px);
+    padding: 60px 0;
+}
+
+
+
 .search-title-main {
     display: block;
 }
@@ -63,8 +70,6 @@
     cursor: pointer;
     border: 1px solid #e0e0e0;
     height: 100%;
-    max-width: 260px;
-    margin: 0 auto;
 }
 
 .product-card:hover {

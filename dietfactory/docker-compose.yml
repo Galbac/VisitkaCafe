@@ -1,10 +1,26 @@
 services:
+  web:
+    build: .
+    container_name: business_web
+    restart: always
+    volumes:
+      - static_volume:/app/staticfiles
+      - ./media:/app/media
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - db_network
+
   db:
-    image: postgres
+    image: postgres:17-alpine
     container_name: business_postgres_db
     restart: always
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - postgres_data:/var/lib/postgresql/data
     env_file:
       - .env
     environment:
@@ -16,38 +32,18 @@ services:
     networks:
       - db_network
 
-  web:
-    build: .
-    container_name: business_web
-    restart: always
-    command: >
-      sh -c "
-              python manage.py migrate --noinput &&
-              python manage.py collectstatic --noinput &&
-              gunicorn --bind 0.0.0.0:8000 dietfactory.wsgi:application
-            "
-    volumes:
-      - ./media:/app/media
-      - static_volume:/app/staticfiles
-    ports:
-      - 8000:8000
-    env_file:
-      - .env
-    depends_on:
-      - db
-    networks:
-      - db_network
-
   nginx:
-    image: nginx:alpine
+    image: nginx
     container_name: business_nginx
     restart: always
     ports:
-      - 80:80
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./nginx:/etc/nginx/conf.d
+      - ./nginx:/etc/nginx/conf.d:ro
       - static_volume:/app/staticfiles
       - ./media:/app/media
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - web
     networks:
@@ -58,13 +54,13 @@ services:
     container_name: business_adminer
     restart: always
     ports:
-      - 8080:8080
+      - "8080:8080"
     networks:
       - db_network
 
 volumes:
-  postgres_data:
   static_volume:
+  postgres_data:
 
 networks:
   db_network:

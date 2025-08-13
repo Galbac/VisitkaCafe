@@ -561,8 +561,11 @@
 }
 
 .feature-icon {
-    stroke: #27ae60;
-    transition: all 0.3s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Важно: не обрезать иконку */
+    max-width: 70px;
+    max-height: 70px;
 }
 
 .feature-card:hover .feature-icon {
@@ -641,10 +644,12 @@
 /* Сетка карточек */
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 24px;
+    grid-template-columns: repeat(3, 1fr); /* Ровно 3 колонки на больших экранах */
     max-width: 1000px;
     margin: 0 auto;
+    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 /* Заголовок */
@@ -720,27 +725,38 @@
 
 /* Адаптивность */
 @media (max-width: 768px) {
-    .features-title {
-        font-size: 2.1rem;
-    }
-
-    .feature-card {
-        padding: 24px 16px;
+   .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 500px; /* Ограничиваем ширину */
+        margin: 0 auto;   /* Центрируем */
     }
 
     .feature-icon-wrapper {
-        width: 60px;
-        height: 60px;
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 12px;
+    }
+
+    .feature-icon {
+        width: 40px;
+        height: 40px;
     }
 
     .feature-label {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
+        line-height: 1.4;
+    }
+
+    .features-title {
+        font-size: 2.1rem;
+        margin-bottom: 40px;
     }
 }
 
 @media (max-width: 480px) {
-    .features-title {
-        font-size: 1.8rem;
+    .features-grid {
+        grid-template-columns: 1fr 1fr; /* Явно 2 колонки */
+        gap: 16px;
     }
 
     .feature-icon-wrapper {
@@ -748,8 +764,17 @@
         height: 50px;
     }
 
+    .feature-icon {
+        width: 36px;
+        height: 36px;
+    }
+
     .feature-label {
         font-size: 1.05rem;
+    }
+
+    .features-title {
+        font-size: 1.8rem;
     }
 }
 
