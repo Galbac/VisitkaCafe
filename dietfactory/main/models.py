@@ -79,10 +79,10 @@ class Product(models.Model):
     composition = models.TextField('Состав', help_text="Каждый ингредиент с новой строки")
 
     # КБЖУ на 100 грамм
-    calories = models.PositiveSmallIntegerField('Калории (ккал)', help_text="на 100 г")
-    proteins = models.DecimalField('Белки (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
-    fats = models.DecimalField('Жиры (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
-    carbs = models.DecimalField('Углеводы (г)', max_digits=4, decimal_places=1, help_text="на 100 г")
+    calories = models.DecimalField('Калории (ккал)', max_digits=6, decimal_places=2, help_text="на 100 г")
+    proteins = models.DecimalField('Белки (г)', max_digits=4, decimal_places=2, help_text="на 100 г")
+    fats = models.DecimalField('Жиры (г)', max_digits=4, decimal_places=2, help_text="на 100 г")
+    carbs = models.DecimalField('Углеводы (г)', max_digits=4, decimal_places=2, help_text="на 100 г")
 
     class Meta:
         verbose_name = _("Продукт")
