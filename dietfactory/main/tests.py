@@ -228,3 +228,23 @@ class StaticAndLegalPagesTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'], 'application/xml')
         self.assertIn('<urlset', response.content.decode('utf-8'))
+
+
+class RequestValidationTests(TestCase):
+    def test_contact_rejects_non_object_json(self):
+        for value in [None, [], "text", 42]:
+            response = self.client.post(reverse('contact_ajax'), data=json.dumps(value), content_type='application/json')
+            self.assertEqual(response.status_code, 400)
+
+    def test_order_rejects_non_object_json(self):
+        for value in [None, [], "text", 42]:
+            response = self.client.post(reverse('order_ajax'), data=json.dumps(value), content_type='application/json')
+            self.assertEqual(response.status_code, 400)
+
+    def test_invalid_quantity_does_not_save_order(self):
+        for quantity in [-1, 0, 10001, "invalid"]:
+            response = self.client.post(reverse('order_ajax'), data=json.dumps({
+                'name': 'Test', 'phone': '+79999999999', 'quantity': quantity,
+            }), content_type='application/json')
+            self.assertEqual(response.status_code, 400)
+        self.assertEqual(OrderRequest.objects.count(), 0)

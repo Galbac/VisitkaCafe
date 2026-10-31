@@ -1,0 +1,16 @@
+services:
+  db:
+    ports: !override
+      - "127.0.0.1:5433:5432"
+  web:
+    environment:
+      DEBUG: "True"
+      SESSION_COOKIE_SECURE: "False"
+      CSRF_COOKIE_SECURE: "False"
+    ports: !override
+      - "127.0.0.1:8000:8000"
+  nginx:
+    ports: !override
+      - "127.0.0.1:80:80"
+    volumes:
+      - ./nginx/local.conf.template:/etc/nginx/conf.d/businesscard.conf:ro

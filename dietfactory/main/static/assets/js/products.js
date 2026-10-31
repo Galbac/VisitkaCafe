@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function showProductModal(data) {
         modalName.textContent = data.name;
         modalDesc.textContent = data.description;
-        modalTech.innerHTML = data.technology ? `<strong>Технология:</strong><br>${data.technology}` : '';
+        modalTech.textContent = data.technology ? 'Технология: ' + data.technology : '';
         document.getElementById('modalWeight').textContent = data.weight;
 
         const compositionList = document.getElementById('compositionList');

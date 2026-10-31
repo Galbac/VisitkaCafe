@@ -20,7 +20,7 @@ def delete_file_if_exists(file_field):
         file_path = file_field.path
         if os.path.isfile(file_path):
             media_root_str = str(settings.MEDIA_ROOT)
-            if file_path.startswith(media_root_str):
+            if os.path.commonpath([os.path.realpath(file_path), os.path.realpath(media_root_str)]) == os.path.realpath(media_root_str):
                 try:
                     os.remove(file_path)
                     print(f"Файл удален: {file_path}")

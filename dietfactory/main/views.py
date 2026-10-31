@@ -1,6 +1,6 @@
 import json
 import logging
-import traceback
+from html import escape
 
 import requests
 from decouple import config
@@ -45,7 +45,7 @@ def send_telegram_notification(text: str) -> bool:
         logger.error(f"Ошибка ответа Telegram API: {response.status_code} - {response.text}")
         return False
     except Exception as e:
-        logger.error(f"Исключение при обращении к Telegram: {e}")
+        logger.error("Ошибка подключения к Telegram: %s", type(e).__name__)
         return False
 
 
@@ -155,9 +155,11 @@ class ContactAjaxView(View):
                 data = json.loads(request.body)
             else:
                 data = request.POST
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
+        if not isinstance(data, dict):
+            return JsonResponse({'success': False}, status=400)
         form = ContactForm(data)
         if form.is_valid():
             name = form.cleaned_data['name']
@@ -176,10 +178,10 @@ class ContactAjaxView(View):
             # 2. Отправляем в Telegram
             tg_message = (
                 f"📩 <b>Новое обращение с сайта</b>\n"
-                f"<b>👤 Имя:</b> {name}\n"
-                f"<b>📧 Email:</b> {email}\n"
-                f"<b>📝 Тема:</b> {subject}\n"
-                f"<b>💬 Сообщение:</b>\n{message}\n"
+                f"<b>👤 Имя:</b> {escape(str(name))}\n"
+                f"<b>📧 Email:</b> {escape(str(email))}\n"
+                f"<b>📝 Тема:</b> {escape(str(subject))}\n"
+                f"<b>💬 Сообщение:</b>\n{escape(str(message))}\n"
                 f"-----------------------------------\n"
             )
             send_telegram_notification(tg_message)
@@ -198,9 +200,11 @@ class OrderAjaxView(View):
                 data = json.loads(request.body)
             else:
                 data = request.POST
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, UnicodeDecodeError):
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
+        if not hasattr(data, 'get') or isinstance(data, list):
+            return JsonResponse({'success': False}, status=400)
         customer_name = str(data.get('customer_name') or data.get('name') or '').strip()
         phone = str(data.get('phone') or '').strip()
         quantity_raw = data.get('quantity', 1)
@@ -211,37 +215,32 @@ class OrderAjaxView(View):
         if not customer_name or not phone:
             return JsonResponse({'success': False, 'message': 'Укажите ваше имя и номер телефона.'}, status=400)
 
-        try:
-            quantity = max(1, int(quantity_raw))
-        except (ValueError, TypeError):
-            quantity = 1
-
-        product = None
-        if product_id:
-            product = Product.objects.filter(pk=product_id).first()
-        elif product_slug:
-            product = Product.objects.filter(slug=product_slug).first()
-
-        # Сохраняем заказ в базу данных
-        order = OrderRequest.objects.create(
-            product=product,
-            customer_name=customer_name,
-            phone=phone,
-            quantity=quantity,
-            comment=comment,
-            status='new'
-        )
+        payload = {
+            'customer_name': customer_name, 'phone': phone,
+            'quantity': quantity_raw, 'comment': comment,
+            'product': product_id or '',
+        }
+        if product_slug and not product_id:
+            payload['product'] = Product.objects.filter(slug=product_slug).values_list('pk', flat=True).first()
+            if not payload['product']:
+                return JsonResponse({'success': False}, status=400)
+        form = OrderForm(payload)
+        if not form.is_valid():
+            return JsonResponse({'success': False, 'message': 'Проверьте поля заказа.'}, status=400)
+        order = form.save()
+        product = order.product
+        quantity = order.quantity
 
         product_name = product.name if product else "Без указания конкретного товара"
         tg_text = (
             f"🛍 <b>НОВЫЙ ЗАКАЗ С САЙТА #{order.pk}</b>\n"
-            f"<b>📦 Товар:</b> {product_name}\n"
+            f"<b>📦 Товар:</b> {escape(str(product_name))}\n"
             f"<b>🔢 Количество:</b> {quantity} шт.\n"
-            f"<b>👤 Клиент:</b> {customer_name}\n"
-            f"<b>📞 Телефон:</b> {phone}\n"
+            f"<b>👤 Клиент:</b> {escape(str(customer_name))}\n"
+            f"<b>📞 Телефон:</b> {escape(str(phone))}\n"
         )
         if comment:
-            tg_text += f"<b>💬 Комментарий/Адрес:</b> {comment}\n"
+            tg_text += f"<b>💬 Комментарий/Адрес:</b> {escape(str(comment))}\n"
         tg_text += "-----------------------------------"
 
         send_telegram_notification(tg_text)
@@ -277,8 +276,8 @@ class ReviewsListView(View):
             # Уведомляем владельца в Telegram о новом отзыве
             tg_text = (
                 f"⭐ <b>НОВЫЙ ОТЗЫВ НА САЙТЕ (на модерации)</b>\n"
-                f"<b>👤 Автор:</b> {review.name}\n"
-                f"<b>💬 Отзыв:</b>\n{review.text}\n"
+                f"<b>👤 Автор:</b> {escape(str(review.name))}\n"
+                f"<b>💬 Отзыв:</b>\n{escape(str(review.text))}\n"
                 f"-----------------------------------\n"
                 f"Одобрите в админке: /admin/main/review/{review.pk}/change/"
             )

@@ -14,6 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput
+RUN SECRET_KEY=build-only-placeholder CSRF_TRUSTED_ORIGINS=http://localhost DB_NAME=build DB_USER=build DB_PASSWORD=build DB_HOST=localhost DB_PORT=5432 python manage.py collectstatic --noinput
 EXPOSE 8000
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "dietfactory.wsgi:application"]

@@ -1,3 +1,4 @@
+from html import escape
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -34,10 +35,10 @@ class ProductAdmin(admin.ModelAdmin):
     def image_preview(self, obj):
         if obj.image:
             return mark_safe(
-                f'<img src="{obj.image.url}" '
+                f'<img src="{escape(str(obj.image.url))}" '
                 'style="height: 40px; width: 40px; object-fit: cover; border-radius: 5px; '
                 'box-shadow: 0 1px 3px rgba(0,0,0,0.2); border: 1px solid #ddd;" '
-                f'title="{obj.name}">'
+                f'title="{escape(str(obj.name))}">'
             )
         return mark_safe(
             '<div style="height: 40px; width: 40px; background-color: #f0f0f0; '
@@ -52,8 +53,8 @@ class ProductAdmin(admin.ModelAdmin):
     def image_tag(self, obj):
         if obj.image:
             return mark_safe(
-                f'<a href="{obj.image.url}" target="_blank" title="Открыть оригинал">'
-                f'<img src="{obj.image.url}" style="max-height: 200px; max-width: 100%; '
+                f'<a href="{escape(str(obj.image.url))}" target="_blank" title="Открыть оригинал">'
+                f'<img src="{escape(str(obj.image.url))}" style="max-height: 200px; max-width: 100%; '
                 'border-radius: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); '
                 'border: 1px solid #eee;">'
                 '</a>'
@@ -66,7 +67,7 @@ class ProductAdmin(admin.ModelAdmin):
     def certificate_tag(self, obj):
         if obj.certificate:
             return mark_safe(
-                f'<a href="{obj.certificate.url}" target="_blank" style="color: #1a73e8; '
+                f'<a href="{escape(str(obj.certificate.url))}" target="_blank" style="color: #1a73e8; '
                 'text-decoration: none; font-weight: 500;">📄 Открыть</a>'
             )
         return '-'
@@ -98,7 +99,7 @@ class CertificateAdmin(admin.ModelAdmin):
         """Отображение миниатюры в списке объектов."""
         if obj.image:
             return mark_safe(
-                f'<img src="{obj.image.url}" style="height: 40px; width: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd;" title="{obj.name}">'
+                f'<img src="{escape(str(obj.image.url))}" style="height: 40px; width: 40px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd;" title="{escape(str(obj.name))}">'
             )
         return "-"
 
@@ -108,8 +109,8 @@ class CertificateAdmin(admin.ModelAdmin):
         """Отображение полноразмерного изображения в форме редактирования."""
         if obj.image:
             return mark_safe(
-                f'<a href="{obj.image.url}" target="_blank" title="Открыть оригинал">'
-                f'<img src="{obj.image.url}" style="max-height: 200px; max-width: 100%; border-radius: 5px; border: 1px solid #eee; margin-top: 10px;">'
+                f'<a href="{escape(str(obj.image.url))}" target="_blank" title="Открыть оригинал">'
+                f'<img src="{escape(str(obj.image.url))}" style="max-height: 200px; max-width: 100%; border-radius: 5px; border: 1px solid #eee; margin-top: 10px;">'
                 f'</a>'
             )
         return "-"
@@ -142,7 +143,7 @@ class GalleryImageAdmin(admin.ModelAdmin):
         """Отображение миниатюры в списке объектов."""
         if obj.image:
             return mark_safe(
-                f'<img src="{obj.image.url}" style="height: 50px; width: 50px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd;" title="{obj.alt_text or obj.image.name}">'
+                f'<img src="{escape(str(obj.image.url))}" style="height: 50px; width: 50px; object-fit: cover; border-radius: 5px; border: 1px solid #ddd;" title="{escape(str(obj.alt_text or obj.image.name))}">'
             )
         return "-"
 
@@ -152,8 +153,8 @@ class GalleryImageAdmin(admin.ModelAdmin):
         """Отображение полноразмерного изображения в форме редактирования."""
         if obj.image:
             return mark_safe(
-                f'<a href="{obj.image.url}" target="_blank" title="Открыть оригинал">'
-                f'<img src="{obj.image.url}" style="max-height: 300px; max-width: 100%; border-radius: 8px; border: 1px solid #eee; margin-top: 10px;">'
+                f'<a href="{escape(str(obj.image.url))}" target="_blank" title="Открыть оригинал">'
+                f'<img src="{escape(str(obj.image.url))}" style="max-height: 300px; max-width: 100%; border-radius: 8px; border: 1px solid #eee; margin-top: 10px;">'
                 f'</a>'
             )
         return "-"
@@ -193,7 +194,7 @@ class ExclusionAdmin(admin.ModelAdmin):
     # Превью иконки в списке
     def icon_preview(self, obj):
         if obj.icon:
-            return mark_safe(f'<img src="{obj.icon.url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">')
+            return mark_safe(f'<img src="{escape(str(obj.icon.url))}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">')
         return '—'
 
     icon_preview.short_description = 'Превью'

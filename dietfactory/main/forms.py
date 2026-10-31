@@ -8,10 +8,12 @@ class ContactForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={'placeholder': 'Ваш email'}))
     subject = forms.CharField(label='Тема', max_length=128,
                               widget=forms.TextInput(attrs={'placeholder': 'Тема сообщения'}))
-    message = forms.CharField(label='Сообщение', widget=forms.Textarea(attrs={'placeholder': 'Сообщение', 'rows': 5}))
+    message = forms.CharField(max_length=5000, label='Сообщение', widget=forms.Textarea(attrs={'placeholder': 'Сообщение', 'rows': 5}))
 
 
 class OrderForm(forms.ModelForm):
+    quantity = forms.IntegerField(min_value=1, max_value=10000)
+    comment = forms.CharField(required=False, max_length=5000)
     class Meta:
         model = OrderRequest
         fields = ['product', 'customer_name', 'phone', 'quantity', 'comment']
