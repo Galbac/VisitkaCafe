@@ -1,0 +1,40 @@
+{
+  "/": 200,
+  "/products/": 200,
+  "/certifications/": 200,
+  "/reviews/": 200,
+  "/privacy/": 200,
+  "/terms/": 200,
+  "/health/": 200,
+  "/static/assets/css/main.css": 200,
+  "/static/assets/img/logo.svg": 200,
+  "post_rate_limit_with_forged_forwarded_ips": [
+    403,
+    403,
+    403,
+    403,
+    403,
+    403,
+    429,
+    429,
+    429,
+    429,
+    429,
+    429
+  ],
+  "admin_login_rate_limit": [
+    403,
+    403,
+    403,
+    403,
+    403,
+    403,
+    429,
+    429,
+    429,
+    429,
+    429,
+    429
+  ],
+  "security_headers": "ok"
+}

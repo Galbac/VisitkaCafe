@@ -12,6 +12,8 @@ class ContactForm(forms.Form):
 
 
 class OrderForm(forms.ModelForm):
+    phone = forms.RegexField(regex=r"^\+?[0-9() .-]{7,30}$", max_length=30)
+
     quantity = forms.IntegerField(min_value=1, max_value=10000)
     comment = forms.CharField(required=False, max_length=5000)
     class Meta:
@@ -26,6 +28,8 @@ class OrderForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
+    text = forms.CharField(max_length=5000, widget=forms.Textarea)
+
     class Meta:
         model = Review
         fields = ['name', 'text']

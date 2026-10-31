@@ -1,8 +1,25 @@
 server {
  listen 80;
  server_name localhost;
- client_max_body_size 1m;
+ client_max_body_size 12m;
  location /static/ { alias /app/staticfiles/; }
- location /media/ { alias /app/media/; add_header X-Content-Type-Options nosniff always; }
- location / { proxy_pass http://web:8000; proxy_set_header Host $host; }
+    location ~* ^/media/.*\.(png|jpe?g|webp|gif|svg|pdf)$ {
+        root /app;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Content-Security-Policy "sandbox; default-src 'none'; style-src 'unsafe-inline'" always;
+    }
+    location /media/ { return 404; }
+    location ~ ^/(order|contact|reviews)/?$ {
+        limit_req zone=public_forms burst=5 nodelay;
+        limit_req_status 429;
+        include /etc/nginx/conf.d/proxy.inc;
+    }
+    location = /admin/login/ {
+        limit_req zone=admin_login burst=5 nodelay;
+        limit_req_status 429;
+        include /etc/nginx/conf.d/proxy.inc;
+    }
+    location / {
+        include /etc/nginx/conf.d/proxy.inc;
+    }
 }

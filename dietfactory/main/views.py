@@ -1,6 +1,6 @@
 import json
 import logging
-from html import escape
+from html import escape, unescape
 
 import requests
 from decouple import config
@@ -35,14 +35,13 @@ def send_telegram_notification(text: str) -> bool:
             tg_url,
             data={
                 'chat_id': TELEGRAM_CHAT_ID,
-                'text': text,
-                'parse_mode': 'HTML',
+                'text': unescape(text.replace('<b>', '').replace('</b>', ''))[:2000],
             },
             timeout=8
         )
         if response.ok:
             return True
-        logger.error(f"Ошибка ответа Telegram API: {response.status_code} - {response.text}")
+        logger.error("Ошибка ответа Telegram API: %s", response.status_code)
         return False
     except Exception as e:
         logger.error("Ошибка подключения к Telegram: %s", type(e).__name__)
@@ -67,7 +66,7 @@ class SearchProductsView(ListView):
 
     def get_queryset(self):
         query = self.request.GET.get('query', '').strip()
-        if not query:
+        if not query or len(query) > 200:
             return Product.objects.none()
 
         variants = {query, query.lower(), query.capitalize(), query.upper()}
@@ -88,7 +87,7 @@ class SearchProductsView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['query'] = self.request.GET.get('query', '').strip()
+        context['query'] = self.request.GET.get('query', '').strip()[:200]
         return context
 
 
@@ -155,10 +154,10 @@ class ContactAjaxView(View):
                 data = json.loads(request.body)
             else:
                 data = request.POST
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError, RecursionError):
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
-        if not isinstance(data, dict):
+        if not isinstance(data, dict) or any(isinstance(v, (dict, list)) for v in data.values()):
             return JsonResponse({'success': False}, status=400)
         form = ContactForm(data)
         if form.is_valid():
@@ -200,14 +199,16 @@ class OrderAjaxView(View):
                 data = json.loads(request.body)
             else:
                 data = request.POST
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError, RecursionError):
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
-        if not hasattr(data, 'get') or isinstance(data, list):
+        if not isinstance(data, dict) or any(isinstance(v, (dict, list)) for v in data.values()):
             return JsonResponse({'success': False}, status=400)
         customer_name = str(data.get('customer_name') or data.get('name') or '').strip()
         phone = str(data.get('phone') or '').strip()
         quantity_raw = data.get('quantity', 1)
+        if isinstance(quantity_raw, bool):
+            return JsonResponse({'success': False}, status=400)
         comment = str(data.get('comment') or '').strip()
         product_id = data.get('product_id')
         product_slug = data.get('product_slug')

@@ -1,0 +1,10 @@
+{
+  "debug_disabled": true,
+  "session_cookie_secure": true,
+  "csrf_cookie_secure": true,
+  "https_redirect": true,
+  "hsts": true,
+  "forwarded_host_not_trusted": true,
+  "weak_key_rejected": true,
+  "wildcard_host_rejected": true
+}

@@ -1,0 +1,27 @@
+{
+  "web": {
+    "findings": 0,
+    "severities": {},
+    "image_id": "sha256:47ad1cf213cfeae2abbbdd2dd12fa4777810a9505422d7ad6e4673997783f2d6"
+  },
+  "postgres": {
+    "findings": 0,
+    "severities": {},
+    "image_id": "sha256:ce3545ac7a8033f3c1b8ccb8e70bb005ac2a92199611fb54f8eb934e173aec30"
+  },
+  "nginx": {
+    "findings": 0,
+    "severities": {},
+    "image_id": "sha256:373476cbdd829f1d0d922d728ecf5036adf10a6bd370e9232c7cc14089457519"
+  },
+  "adminer": {
+    "findings": 0,
+    "severities": {},
+    "image_id": "sha256:ed06d6e75e2ba9411fc30fbe889759ec399a868bceef5b9634b19b15d8447683"
+  },
+  "certbot": {
+    "findings": 0,
+    "severities": {},
+    "image_id": "sha256:4a205dc02eb6283b7ddc89a2fb39b3a809668b93b09fa35f4b306d6b01750fb1"
+  }
+}

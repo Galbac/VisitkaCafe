@@ -46,12 +46,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('.modal-img-wrap').style.display = data.image ? 'block' : 'none';
 
         if (data.certificate) {
-            modalCert.innerHTML = `
-                    <a href="${data.certificate}" target="_blank" class="cert-link" rel="noopener">
-                        <span class="cert-icon">📜</span>
-                        <span class="cert-text">Сертификат качества</span>
-                    </a>
-                `;
+            const certificateLink = document.createElement('a');
+            certificateLink.href = data.certificate;
+            certificateLink.target = '_blank';
+            certificateLink.rel = 'noopener noreferrer';
+            certificateLink.className = 'cert-link';
+            certificateLink.textContent = '📜 Сертификат качества';
+            modalCert.replaceChildren(certificateLink);
             modalCert.style.display = 'block';
         } else {
             modalCert.style.display = 'none';

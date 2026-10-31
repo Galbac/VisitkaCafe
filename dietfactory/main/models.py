@@ -3,6 +3,7 @@ import os
 import tempfile
 
 from PIL import Image
+from .validators import validate_image_upload, validate_certificate_upload, validate_icon_upload
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -77,8 +78,8 @@ class Product(models.Model):
     slug = models.SlugField('URL', unique=True, blank=True)
     description = models.TextField('Описание продукта')
     technology = models.TextField('Технология производства', blank=True)
-    image = models.ImageField('Фото', upload_to='products/', blank=True, null=True)
-    certificate = models.FileField('Сертификат', upload_to='certificates/', blank=True, null=True)
+    image = models.ImageField('Фото', upload_to='products/', validators=[validate_image_upload], blank=True, null=True)
+    certificate = models.FileField('Сертификат', upload_to='certificates/', validators=[validate_certificate_upload], blank=True, null=True)
     instagram = models.URLField('Ссылка на Instagram', blank=True,
                                 default='https://www.instagram.com/eda__bez.vreda?igsh=eHR2bjNoNjNmcnA4')
 
@@ -124,6 +125,7 @@ class Certificate(models.Model):
         help_text=_("Краткое описание стандарта или сертификата")
     )
     image = models.ImageField(
+        validators=[validate_image_upload],
         upload_to='certificates/',
         verbose_name=_("Изображение сертификата"),
         help_text=_("Файл изображения сертификата")
@@ -150,6 +152,7 @@ class Certificate(models.Model):
 
 class GalleryImage(models.Model):
     image = models.ImageField(
+        validators=[validate_image_upload],
         upload_to='gallery/',
         verbose_name=_("Изображение"),
         help_text=_("Файл изображения для галереи")
@@ -189,6 +192,7 @@ class Review(models.Model):
     text = models.TextField("Текст отзыва", blank=True, null=True)
     screenshot = models.ImageField(
         "Скриншот из Instagram",
+        validators=[validate_image_upload],
         upload_to='reviews/',
         blank=True,
         null=True,
@@ -312,9 +316,7 @@ def delete_gallery_file(sender, instance, **kwargs):
 
 
 def validate_svg_or_png(value):
-    ext = os.path.splitext(value.name)[1].lower()
-    if ext not in ['.svg', '.png']:
-        raise ValidationError('Можно загружать только SVG или PNG.')
+    validate_icon_upload(value)
 
 
 class Exclusion(models.Model):

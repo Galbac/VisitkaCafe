@@ -4,3 +4,12 @@
 .idea
 __pycache__
 media
+
+.env.*
+!.env.example
+staticfiles
+*.sqlite3
+*.log
+
+docs/security
+.quarantine

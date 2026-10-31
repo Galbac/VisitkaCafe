@@ -14,6 +14,7 @@ import sys
 from pathlib import Path
 
 from decouple import config
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -24,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-dietfactory-change-me-in-production')
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -32,7 +33,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 csrf_origins_raw = config('CSRF_TRUSTED_ORIGINS', default='')
 CSRF_TRUSTED_ORIGINS = [orig.strip() for orig in csrf_origins_raw.split(' ') if orig.strip()]
 
-allowed_hosts_raw = config('ALLOWED_HOSTS', default='*')
+allowed_hosts_raw = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,[::1]')
 ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_raw.split(',') if h.strip()]
 
 INSTALLED_APPS = [
@@ -80,7 +81,7 @@ WSGI_APPLICATION = 'dietfactory.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-if 'test' in sys.argv:
+if 'test' in sys.argv and config('TEST_DATABASE_ENGINE', default='sqlite') == 'sqlite':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -141,8 +142,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Proxy and SSL configuration for Nginx
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-USE_X_FORWARDED_HOST = True
-X_FRAME_OPTIONS = 'SAMEORIGIN'
+USE_X_FORWARDED_HOST = False
+X_FRAME_OPTIONS = 'DENY'
 
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
@@ -157,3 +158,16 @@ SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=not DEBUG, cast=
 CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=not DEBUG, cast=bool)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 DATA_UPLOAD_MAX_MEMORY_SIZE = 262144
+
+# Nginx is the only public entry point and overwrites forwarded protocol headers.
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_HSTS_SECONDS = 0 if DEBUG else 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024
+if not DEBUG:
+    if len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5 or SECRET_KEY.startswith('django-insecure-'):
+        raise ImproperlyConfigured('Set a strong SECRET_KEY (at least 50 characters).')
+    if '*' in ALLOWED_HOSTS or not ALLOWED_HOSTS:
+        raise ImproperlyConfigured('Set explicit ALLOWED_HOSTS for production.')

@@ -1,39 +1,52 @@
 services:
   web:
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
     build: .
     container_name: business_web
     restart: always
     volumes:
       - static_volume:/app/staticfiles
       - ./media:/app/media
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     env_file:
       - .env
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - db_network
 
   db:
-    image: postgres:17-alpine
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    image: dietfactory-postgres
+    build:
+      context: .
+      dockerfile: docker/postgres.Dockerfile
     container_name: business_postgres_db
     restart: always
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
     ports:
       - "127.0.0.1:5432:5432"
     networks:
       - db_network
 
   nginx:
-    image: nginx:alpine
+    image: dietfactory-nginx
+    build:
+      context: .
+      dockerfile: docker/nginx.Dockerfile
     container_name: business_nginx
     restart: always
     ports:
@@ -52,7 +65,11 @@ services:
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
 
   certbot:
-    image: certbot/certbot:latest
+    profiles: ["production"]
+    image: dietfactory-certbot
+    build:
+      context: .
+      dockerfile: docker/certbot.Dockerfile
     container_name: business_certbot
     restart: always
     volumes:
@@ -61,7 +78,11 @@ services:
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done;'"
 
   adminer:
-    image: adminer
+    profiles: ["tools"]
+    image: dietfactory-adminer
+    build:
+      context: .
+      dockerfile: docker/adminer.Dockerfile
     container_name: business_adminer
     restart: always
     ports:
