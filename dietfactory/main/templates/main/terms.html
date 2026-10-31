@@ -1,0 +1,83 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Пользовательское соглашение — Еда без вреда{% endblock %}
+{% block description %}Условия использования сайта и заказа натуральных полуфабрикатов «Еда без вреда»{% endblock %}
+
+{% block content %}
+<section class="legal-section">
+    <div class="container">
+        <div class="legal-card">
+            <h1 class="legal-title">Пользовательское соглашение</h1>
+            <p class="legal-date">Редакция от 2025 года</p>
+
+            <div class="legal-content">
+                <h2>1. Предмет соглашения</h2>
+                <p>Настоящее Пользовательское соглашение регулирует условия использования сайта «Еда без вреда» и оформления предварительных заявок на заказ натуральных полуфабрикатов без сахара, глютена и ГМО.</p>
+
+                <h2>2. Описание продукции</h2>
+                <p>Вся продукция производится в строгом соответствии с санитарно-гигиеническими нормами и стандартами качества. Информация о КБЖУ, составе и фасовке указана на основе лабораторных исследований и технических карт.</p>
+
+                <h2>3. Оформление заказа и оплата</h2>
+                <p>Заявка, оставленная на сайте или через мессенджер WhatsApp, является предварительным намерением приобрести продукцию. Окончательное подтверждение стоимости, условий оплаты и времени доставки осуществляется менеджером при подтверждении заказа.</p>
+
+                <h2>4. Отзывы пользователей</h2>
+                <p>Оставляя отзыв на сайте, пользователь подтверждает достоверность предоставленной информации и соглашается на ее публичное размещение после прохождения модерации.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.legal-section {
+    padding: 60px 0 80px 0;
+    background: #fcfdfc;
+    min-height: 70vh;
+}
+.legal-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid #eef2ee;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.legal-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+.legal-date {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+.legal-content h2 {
+    font-size: 1.3rem;
+    color: #27ae60;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+.legal-content p {
+    font-size: 1rem;
+    color: #4a5568;
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+@media (max-width: 600px) {
+    .legal-section {
+        padding: 30px 0 50px 0;
+    }
+    .legal-card {
+        padding: 22px 16px;
+        border-radius: 14px;
+    }
+    .legal-title {
+        font-size: 1.6rem;
+    }
+}
+</style>
+{% endblock %}

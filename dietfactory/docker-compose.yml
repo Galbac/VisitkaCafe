@@ -7,7 +7,7 @@ services:
       - static_volume:/app/staticfiles
       - ./media:/app/media
     ports:
-      - 8000:8000
+      - "8000:8000"
     env_file:
       - .env
     depends_on:
@@ -28,12 +28,12 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     networks:
       - db_network
 
   nginx:
-    image: nginx
+    image: nginx:alpine
     container_name: business_nginx
     restart: always
     ports:
@@ -44,23 +44,35 @@ services:
       - static_volume:/app/staticfiles
       - ./media:/app/media
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
     depends_on:
       - web
     networks:
       - db_network
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: business_certbot
+    restart: always
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done;'"
 
   adminer:
     image: adminer
     container_name: business_adminer
     restart: always
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     networks:
       - db_network
 
 volumes:
   static_volume:
   postgres_data:
+  certbot_www:
 
 networks:
   db_network:

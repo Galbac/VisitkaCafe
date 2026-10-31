@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
-from .models import Product, Certificate, GalleryImage, Review, Exclusion
+from .models import Product, Certificate, GalleryImage, Review, Exclusion, ContactMessage, OrderRequest
 
 
 @admin.register(Product)
@@ -163,8 +163,9 @@ class GalleryImageAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('name', 'created_at', 'has_text', 'has_screenshot')
-    list_filter = ('created_at',)
+    list_display = ('name', 'created_at', 'is_active', 'has_text', 'has_screenshot')
+    list_filter = ('is_active', 'created_at')
+    list_editable = ('is_active',)
     search_fields = ('name', 'text')
     readonly_fields = ('created_at',)
 
@@ -192,11 +193,10 @@ class ExclusionAdmin(admin.ModelAdmin):
     # Превью иконки в списке
     def icon_preview(self, obj):
         if obj.icon:
-            return f'<img src="{obj.icon.url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">'
+            return mark_safe(f'<img src="{obj.icon.url}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;">')
         return '—'
 
     icon_preview.short_description = 'Превью'
-    icon_preview.allow_tags = True  # Для Django < 4.2
 
     # Форма редактирования
     fieldsets = (
@@ -205,5 +205,22 @@ class ExclusionAdmin(admin.ModelAdmin):
         }),
     )
 
-    # Опционально: добавить поиск
     search_fields = ['name']
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'subject', 'created_at', 'is_processed')
+    list_filter = ('is_processed', 'created_at')
+    list_editable = ('is_processed',)
+    search_fields = ('name', 'email', 'subject', 'message')
+    readonly_fields = ('created_at',)
+
+
+@admin.register(OrderRequest)
+class OrderRequestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer_name', 'phone', 'product', 'quantity', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    list_editable = ('status',)
+    search_fields = ('customer_name', 'phone', 'comment')
+    readonly_fields = ('created_at',)

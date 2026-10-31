@@ -57,6 +57,15 @@ document.addEventListener('DOMContentLoaded', function () {
             modalCert.style.display = 'none';
         }
 
+        const detailLink = document.getElementById('modalDetailLink');
+        if (detailLink) {
+            detailLink.href = `/products/${data.slug}/`;
+        }
+        const waLink = document.getElementById('modalWaOrderLink');
+        if (waLink) {
+            waLink.href = `https://wa.me/79634001323?text=${encodeURIComponent('Здравствуйте! Хочу заказать «' + data.name + '»')}`;
+        }
+
         openModal();
     }
 

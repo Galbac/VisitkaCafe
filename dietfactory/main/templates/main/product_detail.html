@@ -1,0 +1,530 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — Еда без вреда{% endblock %}
+{% block description %}{{ product.description|truncatechars:150 }}{% endblock %}
+
+{% block content %}
+<div class="product-detail-page">
+    <div class="container">
+        <!-- Хлебные крошки -->
+        <nav class="detail-breadcrumbs" aria-label="Навигация">
+            <a href="{% url 'home' %}">Главная</a>
+            <span class="bc-sep">/</span>
+            <a href="{% url 'products' %}">Продукты</a>
+            <span class="bc-sep">/</span>
+            <span class="bc-current">{{ product.name }}</span>
+        </nav>
+
+        <div class="product-detail-card">
+            <div class="detail-grid">
+                <!-- Левая колонка: Фото -->
+                <div class="detail-media">
+                    <div class="detail-image-box">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="detail-main-img">
+                        {% else %}
+                        <div class="detail-placeholder">
+                            <span class="placeholder-emoji">🍲</span>
+                            <span>Фото скоро появится</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    {% if product.certificate %}
+                    <a href="{{ product.certificate.url }}" target="_blank" rel="noopener" class="cert-badge-link">
+                        <span class="badge-icon">📜</span>
+                        <span class="badge-text">Сертификат качества (открыть)</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Правая колонка: Инфо и заказ -->
+                <div class="detail-info">
+                    <div class="detail-header-badge">Без глютена и сахара</div>
+                    <h1 class="detail-title">{{ product.name }}</h1>
+
+                    <div class="detail-weight-badge">
+                        <strong>Фасовка:</strong> {{ product.weight }}
+                    </div>
+
+                    <div class="detail-desc-block">
+                        <h3 class="detail-subhead">Описание</h3>
+                        <p class="detail-desc">{{ product.description }}</p>
+                    </div>
+
+                    <!-- КБЖУ Таблица -->
+                    <div class="macro-card">
+                        <h3 class="macro-title">Пищевая ценность на 100 г:</h3>
+                        <div class="macro-grid">
+                            <div class="macro-box">
+                                <span class="macro-num">{{ product.calories }}</span>
+                                <span class="macro-txt">ккал</span>
+                            </div>
+                            <div class="macro-box">
+                                <span class="macro-num">{{ product.proteins }} г</span>
+                                <span class="macro-txt">Белки</span>
+                            </div>
+                            <div class="macro-box">
+                                <span class="macro-num">{{ product.fats }} г</span>
+                                <span class="macro-txt">Жиры</span>
+                            </div>
+                            <div class="macro-box">
+                                <span class="macro-num">{{ product.carbs }} г</span>
+                                <span class="macro-txt">Углеводы</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Состав -->
+                    <div class="detail-composition-block">
+                        <h3 class="detail-subhead">Состав:</h3>
+                        <p class="composition-text">{{ product.composition|linebreaksbr }}</p>
+                    </div>
+
+                    {% if product.technology %}
+                    <div class="detail-tech-block">
+                        <h3 class="detail-subhead">Технология производства:</h3>
+                        <p class="tech-text">{{ product.technology }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Действия: Кнопки заказа -->
+                    <div class="detail-actions">
+                        <button type="button" class="btn-order-primary" id="openOrderModalBtn">
+                            🛍 Быстрый заказ онлайн
+                        </button>
+
+                        <a href="https://wa.me/79634001323?text=Здравствуйте!%20Хочу%20заказать%20«{{ product.name|urlencode }}»"
+                           target="_blank" rel="noopener" class="btn-order-whatsapp">
+                            💬 Заказать в WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Похожие продукты -->
+        {% if related_products %}
+        <div class="related-section">
+            <h2 class="related-title">Вам также может понравиться</h2>
+            <div class="products-grid">
+                {% for item in related_products %}
+                <div class="product-card" data-slug="{{ item.slug }}" tabindex="0" onclick="window.location.href='{% url 'product_detail' item.slug %}';">
+                    <div class="product-img-wrap">
+                        {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-img-mini" loading="lazy">
+                        {% else %}
+                        <div class="product-img-placeholder">
+                            <span class="placeholder-icon">🍲</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-name">{{ item.name }}</h3>
+                        <p class="product-desc">{{ item.description|truncatechars:40 }}</p>
+                        <div class="product-cta">
+                            <span class="cta-text">Подробнее</span>
+                            <span class="cta-icon">→</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Модальное окно быстрого оформления заказа -->
+<div id="quickOrderModal" class="modal" role="dialog" aria-labelledby="orderModalTitle" style="display: none;">
+    <div class="modal-overlay" id="orderModalOverlay"></div>
+    <div class="modal-content order-modal-content">
+        <button class="modal-close" id="closeOrderModalBtn" aria-label="Закрыть">×</button>
+        <div class="modal-body">
+            <h3 id="orderModalTitle" class="modal-name">Оформление заказа</h3>
+            <p class="order-subtitle">Товар: <strong>{{ product.name }}</strong></p>
+
+            <form id="orderFormSubmit" class="order-form-styled">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.pk }}">
+
+                <div class="form-group">
+                    <label for="orderName">Ваше имя *</label>
+                    <input type="text" id="orderName" name="name" class="form-input" placeholder="Иван" autocomplete="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderPhone">Номер телефона / WhatsApp *</label>
+                    <input type="tel" id="orderPhone" name="phone" class="form-input" placeholder="+7 (999) 000-00-00" inputmode="tel" autocomplete="tel" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderQuantity">Количество (упаковок)</label>
+                    <input type="number" id="orderQuantity" name="quantity" class="form-input" min="1" value="1" inputmode="numeric" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderComment">Адрес доставки или комментарий</label>
+                    <textarea id="orderComment" name="comment" class="form-textarea" rows="3" placeholder="Укажите город, улицу или пожелания к доставке"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit" id="orderSubmitBtn">Подтвердить заказ</button>
+            </form>
+
+            <div id="orderStatusMsg" class="form-message" style="display: none;"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="{% static 'assets/css/products.css' %}" rel="stylesheet">
+<style>
+.product-detail-page {
+    padding: 40px 0 80px 0;
+    background: #fcfdfc;
+    min-height: 80vh;
+}
+.detail-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin-bottom: 25px;
+}
+.detail-breadcrumbs a {
+    color: #27ae60;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.detail-breadcrumbs a:hover {
+    color: #2ecc71;
+}
+.product-detail-card {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    border: 1px solid #eef2ee;
+    padding: 35px;
+    margin-bottom: 50px;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 40px;
+}
+@media (max-width: 850px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.detail-media {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.detail-image-box {
+    width: 100%;
+    max-height: 440px;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f5f9f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.02);
+}
+.detail-main-img {
+    width: 100%;
+    height: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 16px;
+}
+.detail-placeholder {
+    padding: 60px 20px;
+    text-align: center;
+    color: #95a5a6;
+}
+.placeholder-emoji {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 10px;
+}
+.cert-badge-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #eafaf1;
+    color: #27ae60;
+    padding: 10px 18px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid #d4efdf;
+    transition: all 0.2s;
+}
+.cert-badge-link:hover {
+    background: #27ae60;
+    color: #ffffff;
+}
+.detail-header-badge {
+    display: inline-block;
+    background: #2ecc71;
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+.detail-title {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-weight: 800;
+    line-height: 1.25;
+}
+.detail-weight-badge {
+    font-size: 1.1rem;
+    color: #34495e;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    background: #f8faf8;
+    border-radius: 8px;
+    display: inline-block;
+}
+.detail-subhead {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+.detail-desc, .composition-text, .tech-text {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.macro-card {
+    background: #f7faf7;
+    border: 1px solid #e1efe1;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 25px;
+}
+.macro-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #27ae60;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.macro-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+.macro-box {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 10px 5px;
+    text-align: center;
+    border: 1px solid #e2ece2;
+}
+.macro-num {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #2c3e50;
+}
+.macro-txt {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+}
+.detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+}
+.btn-order-primary {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: #ffffff;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.35);
+    transition: all 0.2s ease;
+}
+.btn-order-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.45);
+}
+.btn-order-whatsapp {
+    background: #25d366;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+    transition: all 0.2s ease;
+}
+.btn-order-whatsapp:hover {
+    background: #20ba5a;
+    transform: translateY(-2px);
+}
+.related-section {
+    margin-top: 60px;
+}
+.related-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 25px;
+}
+.order-modal-content {
+    max-width: 480px;
+    padding: 30px;
+    border-radius: 20px;
+}
+.order-subtitle {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+.order-form-styled .form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+.order-form-styled label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #34495e;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 768px) {
+    .product-detail-page {
+        padding: 20px 0 50px 0;
+    }
+    .product-detail-card {
+        padding: 20px 14px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+    }
+    .detail-title {
+        font-size: 1.6rem;
+    }
+    .detail-image-box {
+        max-height: 280px;
+    }
+    .macro-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .detail-actions {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .btn-order-primary,
+    .btn-order-whatsapp {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    .order-modal-content {
+        width: 94vw;
+        padding: 22px 16px;
+        border-radius: 16px;
+    }
+    .order-form-styled input,
+    .order-form-styled textarea {
+        font-size: 16px !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('quickOrderModal');
+    const openBtn = document.getElementById('openOrderModalBtn');
+    const closeBtn = document.getElementById('closeOrderModalBtn');
+    const overlay = document.getElementById('orderModalOverlay');
+    const form = document.getElementById('orderFormSubmit');
+    const statusMsg = document.getElementById('orderStatusMsg');
+    const submitBtn = document.getElementById('orderSubmitBtn');
+
+    function openModal() {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    if (openBtn) openBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (overlay) overlay.addEventListener('click', closeModal);
+
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Отправка...';
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+
+            fetch('{% url "order_ajax" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(resData => {
+                statusMsg.style.display = 'block';
+                statusMsg.textContent = resData.message;
+                statusMsg.className = resData.success ? 'form-message success show' : 'form-message error show';
+
+                if (resData.success) {
+                    form.reset();
+                    setTimeout(closeModal, 2500);
+                }
+            })
+            .catch(() => {
+                statusMsg.style.display = 'block';
+                statusMsg.textContent = 'Ошибка соединения. Попробуйте еще раз или позвоните нам.';
+                statusMsg.className = 'form-message error show';
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Подтвердить заказ';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

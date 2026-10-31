@@ -298,22 +298,3 @@ window.FitAudit = {
     }
 };
 
-
-// Закрытие при клике вне меню
-document.addEventListener('click', function (e) {
-    if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-        mainNav.classList.remove('show');
-        menuToggle.classList.remove('open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-    }
-});
-
-// Закрытие при нажатии Escape
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && mainNav.classList.contains('show')) {
-        mainNav.classList.remove('show');
-        menuToggle.classList.remove('open');
-        menuToggle.setAttribute('aria-expanded', 'false');
-    }
-});
-

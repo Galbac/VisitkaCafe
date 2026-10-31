@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from slugify import slugify as py_slugify
 
 
 # Универсальная функция удаления файла
@@ -40,29 +41,35 @@ def optimize_image(image_field, max_size=(1200, 1200), quality=85):
     :param image_field: файл изображения
     :param max_size: максимальный размер (ширина, высота)
     :param quality: качество (1-100)
-    :return: путь к временному оптимизированному файлу
+    :return: (путь к временному файлу, формат) или (None, None)
     """
     if not image_field:
-        return None
+        return None, None
 
-    img = Image.open(image_field)
-    img_format = img.format  # Сохраняем формат (JPEG, PNG и т.д.)
+    try:
+        img = Image.open(image_field)
+        img_format = img.format or 'JPEG'
 
-    # Конвертируем PNG в RGB, если есть альфа-канал
-    if img.mode in ('RGBA', 'LA'):
-        background = Image.new('RGB', img.size, (255, 255, 255))
-        background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-        img = background
+        # Конвертируем PNG в RGB, если есть альфа-канал
+        if img.mode in ('RGBA', 'LA'):
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+            img = background
+        elif img.mode != 'RGB':
+            img = img.convert('RGB')
 
-    # Уменьшаем, если слишком большое
-    img.thumbnail(max_size, Image.Resampling.LANCZOS)
+        # Уменьшаем, если слишком большое
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-    # Сохраняем во временный файл
-    temp_file = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
-    img.save(temp_file, format='JPEG', quality=quality, optimize=True)
-    temp_file.close()
+        # Сохраняем во временный файл
+        temp_file = tempfile.NamedTemporaryFile(suffix='.jpg', delete=False)
+        img.save(temp_file, format='JPEG', quality=quality, optimize=True)
+        temp_file.close()
 
-    return temp_file.name, img_format
+        return temp_file.name, img_format
+    except Exception as e:
+        print(f"Ошибка оптимизации изображения: {e}")
+        return None, None
 
 
 class Product(models.Model):
@@ -87,12 +94,13 @@ class Product(models.Model):
     class Meta:
         verbose_name = _("Продукт")
         verbose_name_plural = _("Продукты")
+        ordering = ['id']
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base_slug = slugify(self.name)
+            base_slug = py_slugify(self.name)
             if not base_slug:
-                base_slug = "product"
+                base_slug = slugify(self.name) or "product"
             slug = base_slug
             n = 1
             while Product.objects.filter(slug=slug).exclude(pk=self.pk).exists():
@@ -186,6 +194,11 @@ class Review(models.Model):
         null=True,
         help_text="Можно загрузить скриншот отзыва из Instagram"
     )
+    is_active = models.BooleanField(
+        "Опубликован",
+        default=False,
+        help_text="Только опубликованные отзывы отображаются на сайте"
+    )
     created_at = models.DateTimeField("Дата", default=timezone.now)
 
     class Meta:
@@ -195,6 +208,56 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.created_at.strftime('%d.%m.%Y')}"
+
+
+class ContactMessage(models.Model):
+    name = models.CharField("Имя", max_length=100)
+    email = models.EmailField("Email")
+    subject = models.CharField("Тема", max_length=200)
+    message = models.TextField("Сообщение")
+    created_at = models.DateTimeField("Дата отправки", auto_now_add=True)
+    is_processed = models.BooleanField("Обработано", default=False)
+
+    class Meta:
+        verbose_name = "Сообщение с сайта"
+        verbose_name_plural = "Сообщения с сайта"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} ({self.email}) — {self.created_at.strftime('%d.%m.%Y %H:%M')}"
+
+
+class OrderRequest(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'Новая заявка'),
+        ('in_progress', 'В обработке'),
+        ('completed', 'Выполнена'),
+        ('cancelled', 'Отменена'),
+    ]
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders',
+        verbose_name="Продукт"
+    )
+    customer_name = models.CharField("Имя клиента", max_length=100)
+    phone = models.CharField("Телефон / WhatsApp", max_length=30)
+    quantity = models.PositiveIntegerField("Количество", default=1)
+    comment = models.TextField("Комментарий / адрес доставки", blank=True)
+    status = models.CharField("Статус", max_length=20, choices=STATUS_CHOICES, default='new')
+    created_at = models.DateTimeField("Дата заявки", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Заявка на заказ"
+        verbose_name_plural = "Заявки на заказ"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        prod_title = self.product.name if self.product else "Произвольный заказ"
+        return f"Заказ #{self.pk or 'new'} - {prod_title} ({self.customer_name})"
 
 
 @receiver(pre_save, sender=Review)
@@ -226,6 +289,26 @@ def optimize_review_screenshot(sender, instance, **kwargs):
 def delete_review_screenshot(sender, instance, **kwargs):
     if instance.screenshot:
         delete_file_if_exists(instance.screenshot)
+
+
+@receiver(post_delete, sender=Product)
+def delete_product_files(sender, instance, **kwargs):
+    if instance.image:
+        delete_file_if_exists(instance.image)
+    if instance.certificate:
+        delete_file_if_exists(instance.certificate)
+
+
+@receiver(post_delete, sender=Certificate)
+def delete_certificate_file(sender, instance, **kwargs):
+    if instance.image:
+        delete_file_if_exists(instance.image)
+
+
+@receiver(post_delete, sender=GalleryImage)
+def delete_gallery_file(sender, instance, **kwargs):
+    if instance.image:
+        delete_file_if_exists(instance.image)
 
 
 def validate_svg_or_png(value):
@@ -260,3 +343,9 @@ class Exclusion(models.Model):
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_delete, sender=Exclusion)
+def delete_exclusion_icon(sender, instance, **kwargs):
+    if instance.icon:
+        delete_file_if_exists(instance.icon)

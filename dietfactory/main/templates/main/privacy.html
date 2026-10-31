@@ -1,0 +1,107 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Политика конфиденциальности — Еда без вреда{% endblock %}
+{% block description %}Политика обработки персональных данных компании «Еда без вреда»{% endblock %}
+
+{% block content %}
+<section class="legal-section">
+    <div class="container">
+        <div class="legal-card">
+            <h1 class="legal-title">Политика конфиденциальности</h1>
+            <p class="legal-date">Редакция от 2025 года</p>
+
+            <div class="legal-content">
+                <h2>1. Общие положения</h2>
+                <p>Настоящая Политика обработки персональных данных (далее — «Политика») определяет порядок обработки и защиты персональной информации пользователей сайта «Еда без вреда» (далее — «Сайт»).</p>
+                <p>Мы уважаем право каждого посетителя на конфиденциальность и предпринимаем все необходимые правовые, организационные и технические меры для защиты персональных данных в соответствии с Федеральным законом РФ № 152-ФЗ «О персональных данных».</p>
+
+                <h2>2. Состав собираемых данных</h2>
+                <p>При использовании форм на Сайте (форма обратной связи, заказ продукции, добавление отзыва) мы можем собирать следующие данные:</p>
+                <ul>
+                    <li>Имя пользователя;</li>
+                    <li>Номер контактного телефона (WhatsApp);</li>
+                    <li>Адрес электронной почты (Email);</li>
+                    <li>Адрес доставки или комментарий к заказу.</li>
+                </ul>
+
+                <h2>3. Цели обработки персональных данных</h2>
+                <p>Персональные данные собираются исключительно для следующих целей:</p>
+                <ul>
+                    <li>Обработка входящих запросов и консультация по ассортименту полуфабрикатов;</li>
+                    <li>Оформление, подтверждение и доставка заказов покупателю;</li>
+                    <li>Публикация отзывов клиентов с их согласия;</li>
+                    <li>Повышение качества обслуживания клиентов.</li>
+                </ul>
+
+                <h2>4. Хранение и передача данных</h2>
+                <p>Мы не передаем персональные данные третьим лицам, за исключением случаев, предусмотренных действующим законодательством РФ, либо необходимых для исполнения заказа (службам курьерской доставки).</p>
+
+                <h2>5. Обратная связь</h2>
+                <p>По всем вопросам обработки персональных данных вы можете связаться с нами по электронной почте: <a href="mailto:Magomed@bagomaev.ru">Magomed@bagomaev.ru</a> или по телефону <a href="tel:+79634001323">+7 (963) 400-13-23</a>.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.legal-section {
+    padding: 60px 0 80px 0;
+    background: #fcfdfc;
+    min-height: 70vh;
+}
+.legal-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid #eef2ee;
+    max-width: 900px;
+    margin: 0 auto;
+}
+.legal-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+.legal-date {
+    font-size: 0.95rem;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+.legal-content h2 {
+    font-size: 1.3rem;
+    color: #27ae60;
+    margin-top: 25px;
+    margin-bottom: 12px;
+}
+.legal-content p, .legal-content li {
+    font-size: 1rem;
+    color: #4a5568;
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+.legal-content ul {
+    padding-left: 20px;
+    margin-bottom: 16px;
+}
+.legal-content a {
+    color: #27ae60;
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .legal-section {
+        padding: 30px 0 50px 0;
+    }
+    .legal-card {
+        padding: 22px 16px;
+        border-radius: 14px;
+    }
+    .legal-title {
+        font-size: 1.6rem;
+    }
+}
+</style>
+{% endblock %}

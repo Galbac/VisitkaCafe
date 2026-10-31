@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Review
+from .models import Review, OrderRequest
 
 
 class ContactForm(forms.Form):
@@ -9,6 +9,18 @@ class ContactForm(forms.Form):
     subject = forms.CharField(label='Тема', max_length=128,
                               widget=forms.TextInput(attrs={'placeholder': 'Тема сообщения'}))
     message = forms.CharField(label='Сообщение', widget=forms.Textarea(attrs={'placeholder': 'Сообщение', 'rows': 5}))
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = OrderRequest
+        fields = ['product', 'customer_name', 'phone', 'quantity', 'comment']
+        widgets = {
+            'customer_name': forms.TextInput(attrs={'placeholder': 'Ваше имя', 'class': 'form-input', 'autocomplete': 'name', 'required': True}),
+            'phone': forms.TextInput(attrs={'type': 'tel', 'inputmode': 'tel', 'placeholder': '+7 (___) ___-__-__', 'class': 'form-input', 'autocomplete': 'tel', 'required': True}),
+            'quantity': forms.NumberInput(attrs={'min': 1, 'value': 1, 'inputmode': 'numeric', 'class': 'form-input'}),
+            'comment': forms.Textarea(attrs={'placeholder': 'Адрес доставки или комментарий к заказу...', 'rows': 3, 'class': 'form-textarea'}),
+        }
 
 
 class ReviewForm(forms.ModelForm):

@@ -35,6 +35,14 @@
                 организма. Удобство приготовления, высокое качество ингредиентов и забота о вашем здоровье — всё это в
                 наших продуктах!
             </p>
+            <div class="hero-actions" style="margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="{% url 'products' %}" class="btn-primary" style="padding: 14px 28px; border-radius: 12px; text-decoration: none; font-size: 1.1rem; font-weight: 700; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4); display: inline-flex; align-items: center; gap: 8px;">
+                    🍲 Смотреть меню и заказать
+                </a>
+                <a href="https://wa.me/79634001323?text={{ 'Здравствуйте! Хочу узнать подробнее о продукции'|urlencode }}" target="_blank" rel="noopener" class="btn-primary" style="background: #25d366; padding: 14px 24px; border-radius: 12px; text-decoration: none; font-size: 1.05rem; font-weight: 700; color: #fff; display: inline-flex; align-items: center; gap: 8px;">
+                    💬 Написать в WhatsApp
+                </a>
+            </div>
         </div>
 
     </div>
@@ -51,8 +59,12 @@
                 {% for item in exclusions %}
                 <div class="feature-card">
                     <div class="feature-icon-wrapper">
+                        {% if item.icon %}
                         <img src="{{ item.icon.url }}" alt="Иконка {{ item.name }}" class="feature-icon" width="100"
                              height="100">
+                        {% else %}
+                        <span style="font-size: 3rem;">🌱</span>
+                        {% endif %}
                     </div>
                     <h4 class="feature-label">{{ item.name }}</h4>
                 </div>
@@ -68,9 +80,11 @@
         <h2 class="gallery-title">Галерея</h2>
         <div class="gallery-grid">
             {% for img in gallery_images %}
+            {% if img.image %}
             <div class="gallery-item">
                 <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:'Изображение из галереи' }}">
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

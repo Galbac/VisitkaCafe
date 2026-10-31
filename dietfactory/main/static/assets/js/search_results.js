@@ -57,6 +57,15 @@ document.addEventListener('DOMContentLoaded', function () {
             modalCert.style.display = 'none';
         }
 
+        const detailLink = document.getElementById('modalDetailLink');
+        if (detailLink) {
+            detailLink.href = `/products/${data.slug}/`;
+        }
+        const waLink = document.getElementById('modalWaOrderLink');
+        if (waLink) {
+            waLink.href = `https://wa.me/79634001323?text=${encodeURIComponent('Здравствуйте! Хочу заказать «' + data.name + '»')}`;
+        }
+
         openModal();
     }
 
@@ -109,6 +118,5 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
     });
-    ['msmtp', 'saparbegov-01@yandex.com']
     document.querySelector('.modal-content').addEventListener('click', e => e.stopPropagation());
 });

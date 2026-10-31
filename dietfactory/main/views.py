@@ -1,27 +1,52 @@
 import json
+import logging
 import traceback
 
 import requests
 from decouple import config
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models.functions import Lower
-from django.http import JsonResponse
+from django.db import models
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-# views.py
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 
-from .forms import ContactForm
-from .forms import ReviewForm
-from .models import Product, Certificate, GalleryImage, Exclusion
-from .models import Review
+from .forms import ContactForm, ReviewForm, OrderForm
+from .models import Product, Certificate, GalleryImage, Exclusion, Review, ContactMessage, OrderRequest
+
+logger = logging.getLogger(__name__)
+
+TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN', default='')
+TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID', default='')
 
 
-TELEGRAM_BOT_TOKEN = config('TELEGRAM_BOT_TOKEN')
-TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID')
+def send_telegram_notification(text: str) -> bool:
+    """Безопасная отправка уведомления в Telegram без падения приложения."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning("Telegram Bot Token или Chat ID не заданы в конфигурации.")
+        return False
+
+    try:
+        tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        response = requests.post(
+            tg_url,
+            data={
+                'chat_id': TELEGRAM_CHAT_ID,
+                'text': text,
+                'parse_mode': 'HTML',
+            },
+            timeout=8
+        )
+        if response.ok:
+            return True
+        logger.error(f"Ошибка ответа Telegram API: {response.status_code} - {response.text}")
+        return False
+    except Exception as e:
+        logger.error(f"Исключение при обращении к Telegram: {e}")
+        return False
 
 
 class HomeView(TemplateView):
@@ -45,17 +70,21 @@ class SearchProductsView(ListView):
         if not query:
             return Product.objects.none()
 
-        queryset_case_sensitive = Product.objects.filter(name__contains=query)
-        queryset = Product.objects.filter(name__icontains=query)
+        variants = {query, query.lower(), query.capitalize(), query.upper()}
+        q_filter = models.Q()
+        for v in variants:
+            q_filter |= models.Q(name__contains=v)
+            q_filter |= models.Q(description__contains=v)
+            q_filter |= models.Q(composition__contains=v)
 
-        if not queryset.exists() and queryset_case_sensitive.exists():
-            query_lower = query.lower()
-            queryset_lower = Product.objects.annotate(
-                name_lower=Lower('name')
-            ).filter(name_lower__contains=query_lower)
-            for p in queryset_lower:
-                queryset = queryset_lower
-        return queryset
+        # Также стандартный icontains для PostgreSQL
+        q_filter |= (
+            models.Q(name__icontains=query) |
+            models.Q(description__icontains=query) |
+            models.Q(composition__icontains=query)
+        )
+
+        return Product.objects.filter(q_filter).distinct().order_by('id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -76,12 +105,56 @@ class ProductListView(ListView):
     model = Product
     template_name = 'main/products.html'
     context_object_name = 'products'
+    paginate_by = 24
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'main/product_detail.html'
+    context_object_name = 'product'
+    slug_field = 'slug'
+    slug_url_kwarg = 'slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['related_products'] = Product.objects.exclude(pk=self.object.pk)[:4]
+        context['exclusions'] = Exclusion.objects.all()
+        return context
+
+
+class ProductDetailJsonView(View):
+    def get(self, request, slug):
+        try:
+            product = Product.objects.get(slug=slug)
+        except Product.DoesNotExist:
+            return JsonResponse({'error': 'Not found'}, status=404)
+
+        data = {
+            'id': product.pk,
+            'name': product.name,
+            'slug': product.slug,
+            'description': product.description,
+            'technology': product.technology or '',
+            'image': product.image.url if product.image else '',
+            'certificate': product.certificate.url if product.certificate else '',
+            'instagram': product.instagram or '',
+            'weight': product.weight,
+            'composition': product.composition,
+            'calories': float(product.calories) if product.calories is not None else 0.0,
+            'proteins': float(product.proteins) if product.proteins is not None else 0.0,
+            'fats': float(product.fats) if product.fats is not None else 0.0,
+            'carbs': float(product.carbs) if product.carbs is not None else 0.0,
+        }
+        return JsonResponse(data)
 
 
 class ContactAjaxView(View):
     def post(self, request, *args, **kwargs):
         try:
-            data = json.loads(request.body)
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                data = request.POST
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
 
@@ -92,80 +165,101 @@ class ContactAjaxView(View):
             subject = form.cleaned_data['subject']
             message = form.cleaned_data['message']
 
-            try:
-                tg_message = (
-                    f"📩 <b>Новое сообщение с сайта</b>\n"
-                    f"<b>👤 Имя:</b> {name}\n"
-                    f"<b>📧 Email:</b> {email}\n"
-                    f"<b>📝 Тема:</b> {subject}\n"
-                    f"<b>💬 Сообщение:</b> {message}\n"
-                    f"-----------------------------------\n"
-                )
+            # 1. Всегда сохраняем заявку в базу данных (защита от потери лидов)
+            ContactMessage.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
 
-                # URL для отправки через Telegram Bot API
-                tg_url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-                requests.post(
-                    tg_url,
-                    data={
-                        'chat_id': TELEGRAM_CHAT_ID,
-                        'text': tg_message,
-                        'parse_mode': 'HTML'
-                    },
-                    timeout=10
-                )
+            # 2. Отправляем в Telegram
+            tg_message = (
+                f"📩 <b>Новое обращение с сайта</b>\n"
+                f"<b>👤 Имя:</b> {name}\n"
+                f"<b>📧 Email:</b> {email}\n"
+                f"<b>📝 Тема:</b> {subject}\n"
+                f"<b>💬 Сообщение:</b>\n{message}\n"
+                f"-----------------------------------\n"
+            )
+            send_telegram_notification(tg_message)
 
-                print('✅ Письмо и Telegram-уведомление отправлены')
-                return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение отправлено.'})
-
-            except Exception as e:
-                print(f"❌ Ошибка отправки: {e}")
-                traceback.print_exc()
-                return JsonResponse({'success': False, 'message': 'Ошибка отправки. Попробуйте позже.'})
-
+            return JsonResponse({'success': True, 'message': 'Спасибо! Ваше сообщение принято и сохранено.'})
         else:
-            return JsonResponse({'success': False, 'message': 'Проверьте правильность заполнения формы.'})
+            return JsonResponse({'success': False, 'message': 'Пожалуйста, проверьте корректность заполнения полей.'}, status=400)
 
 
-class ProductDetailView(DetailView):
-    model = Product
-    template_name = 'main/product_detail.html'
-    context_object_name = 'product'
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
+class OrderAjaxView(View):
+    """Прием заказов и заявок на полуфабрикаты онлайн"""
 
-
-class ProductDetailJsonView(View):
-    def get(self, request, slug):
+    def post(self, request, *args, **kwargs):
         try:
-            product = Product.objects.get(slug=slug)
-        except Product.DoesNotExist:
-            return JsonResponse({'error': 'Not found'}, status=404)
-        data = {
-            'name': product.name,
-            'description': product.description,
-            'technology': product.technology,
-            'image': product.image.url if product.image else '',
-            'certificate': product.certificate.url if product.certificate else '',
-            'instagram': product.instagram,
-            'weight': product.weight,
-            'composition': product.composition,
-            'calories': float(product.calories),
-            'proteins': float(product.proteins),
-            'fats': float(product.fats),
-            'carbs': float(product.carbs),
-        }
-        return JsonResponse(data)
+            if request.content_type == 'application/json':
+                data = json.loads(request.body)
+            else:
+                data = request.POST
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Неверный формат данных.'}, status=400)
+
+        customer_name = str(data.get('customer_name') or data.get('name') or '').strip()
+        phone = str(data.get('phone') or '').strip()
+        quantity_raw = data.get('quantity', 1)
+        comment = str(data.get('comment') or '').strip()
+        product_id = data.get('product_id')
+        product_slug = data.get('product_slug')
+
+        if not customer_name or not phone:
+            return JsonResponse({'success': False, 'message': 'Укажите ваше имя и номер телефона.'}, status=400)
+
+        try:
+            quantity = max(1, int(quantity_raw))
+        except (ValueError, TypeError):
+            quantity = 1
+
+        product = None
+        if product_id:
+            product = Product.objects.filter(pk=product_id).first()
+        elif product_slug:
+            product = Product.objects.filter(slug=product_slug).first()
+
+        # Сохраняем заказ в базу данных
+        order = OrderRequest.objects.create(
+            product=product,
+            customer_name=customer_name,
+            phone=phone,
+            quantity=quantity,
+            comment=comment,
+            status='new'
+        )
+
+        product_name = product.name if product else "Без указания конкретного товара"
+        tg_text = (
+            f"🛍 <b>НОВЫЙ ЗАКАЗ С САЙТА #{order.pk}</b>\n"
+            f"<b>📦 Товар:</b> {product_name}\n"
+            f"<b>🔢 Количество:</b> {quantity} шт.\n"
+            f"<b>👤 Клиент:</b> {customer_name}\n"
+            f"<b>📞 Телефон:</b> {phone}\n"
+        )
+        if comment:
+            tg_text += f"<b>💬 Комментарий/Адрес:</b> {comment}\n"
+        tg_text += "-----------------------------------"
+
+        send_telegram_notification(tg_text)
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Ваш заказ успешно оформлен! Мы свяжемся с вами в течение 15 минут.'
+        })
 
 
 class ReviewsListView(View):
-    """Страница со всеми отзывами"""
+    """Страница со всеми отзывами и формой добавления"""
 
     def get(self, request):
-        reviews = Review.objects.all().order_by('-created_at')  # сортировка по дате
-        paginator = Paginator(reviews, 12)  # 12 отзывов на страницу
+        reviews = Review.objects.filter(is_active=True).order_by('-created_at')
+        paginator = Paginator(reviews, 12)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
-
         form = ReviewForm()
 
         return render(request, 'main/reviews.html', {
@@ -175,23 +269,57 @@ class ReviewsListView(View):
 
     def post(self, request):
         form = ReviewForm(request.POST)
-        reviews = Review.objects.all().order_by('-created_at')
-        paginator = Paginator(reviews, 12)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-
         if form.is_valid():
             review = form.save(commit=False)
-            # Можно включить модерацию: review.is_published = False
+            review.is_active = False  # На модерацию
             review.save()
-            messages.success(request, "Спасибо за ваш отзыв! Он будет опубликован после проверки.")
+
+            # Уведомляем владельца в Telegram о новом отзыве
+            tg_text = (
+                f"⭐ <b>НОВЫЙ ОТЗЫВ НА САЙТЕ (на модерации)</b>\n"
+                f"<b>👤 Автор:</b> {review.name}\n"
+                f"<b>💬 Отзыв:</b>\n{review.text}\n"
+                f"-----------------------------------\n"
+                f"Одобрите в админке: /admin/main/review/{review.pk}/change/"
+            )
+            send_telegram_notification(tg_text)
+
+            messages.success(request, "Спасибо за ваш отзыв! Он появится на сайте сразу после проверки модератором.")
             return redirect('reviews_list')
         else:
-            messages.error(request, "Проверьте правильность заполнения формы.")
+            messages.error(request, "Пожалуйста, проверьте правильность заполнения формы.")
+            reviews = Review.objects.filter(is_active=True).order_by('-created_at')
+            paginator = Paginator(reviews, 12)
+            page_number = request.GET.get('page')
+            page_obj = paginator.get_page(page_number)
             return render(request, 'main/reviews.html', {
                 'page_obj': page_obj,
                 'form': form
             })
+
+
+class PrivacyView(TemplateView):
+    template_name = "main/privacy.html"
+
+
+class TermsView(TemplateView):
+    template_name = "main/terms.html"
+
+
+class RobotsTxtView(View):
+    def get(self, request):
+        content = (
+            "User-agent: *\n"
+            "Allow: /\n"
+            "Disallow: /admin/\n"
+            f"Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml\n"
+        )
+        return HttpResponse(content, content_type="text/plain; charset=utf-8")
+
+
+class HealthCheckView(View):
+    def get(self, request):
+        return JsonResponse({"status": "ok", "service": "dietfactory"})
 
 
 class ManifestView(View):

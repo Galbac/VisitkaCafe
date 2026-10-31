@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const modal = document.getElementById("imgModal");
+    if (!modal) return;
+
     const modalImg = document.getElementById("modalImg");
     const modalCaption = document.getElementById("modalCaption");
     const closeBtn = modal.querySelector(".modal-close");

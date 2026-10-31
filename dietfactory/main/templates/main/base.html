@@ -3,7 +3,7 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Еда без вреда - Ваш помощник в вопросах питания{% endblock %}</title>
     <meta name="description"
           content="{% block description %}Правдивая информация о продуктах питания поможет похудеть, набрать мышечную массу, укрепить здоровье{% endblock %}">
@@ -39,6 +39,28 @@
 </head>
 <body>
 {% include 'main/partials/header.html' %}
+
+{% if messages %}
+<div class="messages-container" style="position: fixed; top: 85px; right: 20px; z-index: 99999; max-width: 420px; display: flex; flex-direction: column; gap: 10px;">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }}" style="background: {% if message.tags == 'success' %}#2ecc71{% elif message.tags == 'error' %}#e74c3c{% else %}#3498db{% endif %}; color: #ffffff; padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.18); font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; justify-content: space-between; gap: 15px;">
+        <span>{{ message }}</span>
+        <button type="button" onclick="this.parentElement.remove()" style="background: transparent; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 0; line-height: 1;">&times;</button>
+    </div>
+    {% endfor %}
+</div>
+<script>
+    setTimeout(function() {
+        const msgs = document.querySelector('.messages-container');
+        if (msgs) {
+            msgs.style.transition = 'opacity 0.6s ease';
+            msgs.style.opacity = '0';
+            setTimeout(() => msgs.remove(), 600);
+        }
+    }, 6000);
+</script>
+{% endif %}
+
 <main class="main-content">
     {% block content %}{% endblock %}
 </main>
@@ -59,19 +81,31 @@
             return;
         }
 
+        function toggleMenu(show) {
+            mobileToggle.setAttribute('aria-expanded', String(show));
+            mobileToggle.classList.toggle('open', show);
+            mainNav.classList.toggle('show', show);
+            document.body.classList.toggle('menu-open', show);
+        }
+
         mobileToggle.addEventListener('click', function () {
             const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            this.setAttribute('aria-expanded', !isExpanded);
-            this.classList.toggle('open');
-            mainNav.classList.toggle('show');
+            toggleMenu(!isExpanded);
         });
 
         // Закрытие меню при клике вне его
         document.addEventListener('click', function (e) {
             if (!mobileToggle.contains(e.target) && !mainNav.contains(e.target)) {
-                mobileToggle.setAttribute('aria-expanded', 'false');
-                mobileToggle.classList.remove('open');
-                mainNav.classList.remove('show');
+                if (mainNav.classList.contains('show')) {
+                    toggleMenu(false);
+                }
+            }
+        });
+
+        // Закрытие по клавише Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && mainNav.classList.contains('show')) {
+                toggleMenu(false);
             }
         });
     });

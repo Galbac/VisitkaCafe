@@ -2,7 +2,7 @@
 <header class="site-header" id="site-header">
     <div class="container header-flex">
         <!-- Логотип -->
-        <a href="/" class="logo-block" aria-label="Главная — Еда без вреда">
+        <a href="{% url 'home' %}" class="logo-block" aria-label="Главная — Еда без вреда">
             <img src="{% static 'assets/img/logo.svg' %}" alt="Логотип бренда 'Еда без вреда'" class="logo-img">
             <span class="logo-title">Еда без вреда</span>
         </a>
@@ -19,14 +19,14 @@
 
         <nav class="main-nav" id="main-navigation" role="navigation" aria-label="Основная навигация">
             <ul class="nav-list">
-                <li style="--i:1"><a href="/products/">Продукты</a></li>
-                <li style="--i:2"><a href="/certifications/">Сертификаты</a></li>
-                <li style="--i:3"><a href="/reviews/">Отзывы</a></li>
+                <li style="--i:1"><a href="{% url 'products' %}">Продукты</a></li>
+                <li style="--i:2"><a href="{% url 'certifications' %}">Сертификаты</a></li>
+                <li style="--i:3"><a href="{% url 'reviews_list' %}">Отзывы</a></li>
             </ul>
         </nav>
 
         <!-- Поиск -->
-        <form class="header-search" action="/search/" method="get" role="search">
+        <form class="header-search" action="{% url 'search' %}" method="get" role="search">
             <input
                     type="search"
                     name="query"
