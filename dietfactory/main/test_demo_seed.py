@@ -31,7 +31,7 @@ class DemoSeedTests(TestCase):
         self.assertFalse(Certificate.objects.get().is_active)
         self.assertTrue(all('ТЕСТОВЫЙ ОТЗЫВ' in item.text for item in Review.objects.all()))
         notification.assert_not_called()
-        self.assertContains(self.client.get('/'), 'Демо-витрина')
+        self.assertNotContains(self.client.get('/'), 'Демо-витрина')
 
     def test_real_products_are_preserved_and_not_marked_as_demo(self):
         real = Product.objects.create(name='Настоящий товар', slug='real-preserved', description='Owner content', weight='500 г', composition='Подтверждённый состав', calories=100, proteins=10, fats=5, carbs=15)
