@@ -1,0 +1,86 @@
+/* Shared controls, then the small-screen layout. Loaded after page styles. */
+.btn-primary,.btn-primary:visited{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 24px;border-radius:14px;background:#168343;color:#fff;font:inherit;font-weight:700;text-decoration:none;border:1px solid #168343}
+.btn-primary:hover,.btn-primary:focus-visible{background:#106a35;color:#fff;border-color:#106a35}
+.hero-actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:28px}
+.hero-whatsapp-button,.hero-whatsapp-button:visited{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:50px;padding:14px 24px;border-radius:14px;border:1px solid #ffffff70;background:#ffffff12;color:#fff;font-weight:700;text-decoration:none}
+.hero-whatsapp-button:hover{background:#ffffff24;color:#fff}
+.hero-menu-button,.hero-menu-button:visited{color:#fff}
+.hero-detail{margin-top:18px}
+.hero-section{padding:64px 0;background-attachment:scroll;min-height:calc(100svh - 84px)}
+.hero-section .hero-text-block{background:#15251dcc;max-width:850px;margin-top:24px;margin-bottom:0;padding:36px;border-radius:24px}
+.hero-section .hero-title .logo{height:150px;width:150px;object-fit:contain}
+.hero-section .hero-main-title{font-size:clamp(28px,3vw,38px);line-height:1.2;letter-spacing:-.7px}
+.hero-section .hero-main-desc{font-size:17px;line-height:1.7}
+.social-disclaimer,.instagram-notice{font-size:12px;line-height:1.65;color:#626e65;max-width:540px;margin-top:12px;font-style:normal}
+.instagram-notice{max-width:1200px;margin:24px auto 0;border-top:1px solid #e4ebe4;padding-top:18px}
+#contacts{scroll-margin-top:128px}
+.cert-image-wrapper[role=button]{cursor:zoom-in}
+.cert-view-button{display:flex;align-items:center;gap:8px;justify-content:center;border:0;border-top:1px solid #e6eee5;background:#f3f8f2;color:#166538;padding:14px;width:100%;font:inherit;font-size:14px;font-weight:700;cursor:zoom-in;min-height:48px}
+@media(max-width:1120px) and (min-width:961px){.site-header .header-flex{gap:16px}.site-header .logo-title{font-size:20px}.site-header .nav-list{gap:14px}.site-header .header-search{display:none}}
+@media(max-width:960px){
+ .site-header .header-flex{position:static;min-height:68px;padding:10px 20px;gap:16px}
+ .site-header .logo-img{width:40px;height:40px;border-radius:12px}
+ .site-header .logo-title{font-size:20px;max-width:none;letter-spacing:-.6px}
+ .site-header .logo-block{gap:10px;min-width:0}
+ .site-header .header-search,.site-header .header-insta{display:none}
+ .site-header .mobile-menu-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:none;width:auto;height:44px;padding:10px 13px;border:1px solid #dce8dd;border-radius:12px;background:#f2f7f0;color:#1a4e30;font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+ .site-header .mobile-menu-toggle .menu-label{display:inline;width:auto;height:auto;background:none;transform:none;opacity:1}
+ .site-header .mobile-menu-toggle.open{background:#173e29;color:#fff;border-color:#173e29}
+ .site-header .menu-icon{flex:none;width:20px;height:20px}
+ .site-header .mobile-quick-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:0 20px 10px;background:#fff}
+ .site-header .mobile-quick-nav a{display:flex;align-items:center;justify-content:center;min-height:40px;padding:8px 6px;border-radius:10px;font-size:13px;font-weight:650;color:#385443;text-decoration:none;background:#f3f6f1;white-space:nowrap}
+ .site-header .mobile-quick-nav a:hover,.site-header .mobile-quick-nav a[aria-current]{background:#dceedd;color:#125e2e}
+ .site-header .main-nav{position:absolute;left:12px;right:12px;top:100%;width:auto;max-width:none;height:auto;max-height:calc(100dvh - 130px);padding:22px;background:#fff;border:1px solid #e3ebe1;box-shadow:0 16px 40px #153a2524;border-radius:0 0 22px 22px;overflow-y:auto;visibility:hidden;opacity:0;transform:translateY(-8px);transition:opacity .18s,transform .18s,visibility .18s;z-index:1010}
+ .site-header .main-nav.show{visibility:visible;opacity:1;transform:none}
+ .site-header .menu-heading{display:block;font-size:12px;text-transform:uppercase;letter-spacing:1.3px;font-weight:700;color:#7a897c;margin:0 0 12px}
+ .site-header .nav-list{display:flex;flex-direction:column;align-items:stretch;gap:0;position:static;top:auto;left:auto;width:100%;padding:0;margin:0;background:none}
+ .site-header .nav-list a{display:flex;align-items:center;justify-content:space-between;padding:14px 0;min-height:50px;font-size:18px;border:0;border-bottom:1px solid #edf1eb}
+ .site-header .nav-arrow{display:inline;color:#168343}
+ .site-header .nav-mobile-only{display:block}
+ .menu-search{margin-top:22px}
+ .menu-search label{display:block;font-size:13px;font-weight:650;margin-bottom:8px;color:#536558}
+ .menu-search>div{display:flex;background:#f4f7f2;border:1px solid #dfe7dd;border-radius:12px;padding:4px;gap:5px}
+ .menu-search input{min-width:0;width:100%;padding:10px;border:0;background:none;font:inherit;font-size:16px}
+ .menu-search button{padding:8px 14px;background:#168343;color:#fff;border:0;border-radius:9px;font:inherit;font-weight:650;min-height:44px;cursor:pointer}
+ .site-header .menu-whatsapp{margin-top:20px;padding:14px;border-radius:12px;background:#edf6eb;text-decoration:none;text-align:center;font-weight:700;color:#166538}
+}
+@media(max-width:768px){
+ .hero-section{padding:32px 0 38px;min-height:0;background-position:45% center}
+ .hero-section::before{background:linear-gradient(180deg,#10211755,#102117bb)}
+ .hero-section .hero-container{padding:0 20px;width:100%}
+ .hero-section .hero-title{margin-bottom:12px}
+ .hero-section .hero-title .logo{height:100px;width:100px;padding:8px;border-radius:18px;background:#ffffffd9}
+ .hero-section .hero-subtitle{font-size:14px;line-height:1.5;max-width:280px;margin:0 auto;color:#f2f6ec}
+ .hero-section .hero-text-block{margin-top:22px;padding:24px 20px;background:#15251de8;border-radius:22px;text-align:left}
+ .hero-section .hero-main-title{font-size:clamp(25px,6.4vw,32px);line-height:1.16;letter-spacing:-.8px;margin-bottom:16px;text-align:left}
+ .hero-section .hero-main-desc{font-size:15px;line-height:1.65;padding:0;color:#e8efe4}
+ .hero-detail{margin-top:14px}
+ .hero-actions{flex-direction:column;gap:10px;margin-top:22px}
+ .hero-actions>a{width:100%;min-height:50px;padding:14px 16px;font-size:15px;justify-content:space-between;box-shadow:none}
+ .hero-section .hero-decor{display:none}
+ .about-section.fresh{padding:40px 0;margin-bottom:0;border-radius:0}
+ .features-title{font-size:25px;line-height:1.4;margin-bottom:24px}
+ .features-emphasis{padding:2px 7px;border-radius:8px}
+ .feature-label{font-size:16px}
+ .feature-icon-wrapper{width:56px;height:56px}
+ .feature-icon{width:44px;height:44px}
+ .instagram-notice{margin-top:24px;margin-inline:20px;width:auto;padding-inline:0;font-size:12px}
+ .social-disclaimer{max-width:100%;font-size:12px}
+ .certificates-section .section-header{margin-bottom:24px}
+ .certificates-section .cert-image-wrapper{height:auto}
+}
+@media(max-width:360px){.site-header .header-flex{padding-inline:16px;gap:8px}.site-header .logo-title{font-size:18px}.site-header .logo-img{width:34px;height:34px}.site-header .mobile-menu-toggle{padding-inline:10px}.site-header .mobile-quick-nav{padding-inline:16px;gap:6px}.hero-section .hero-container{padding-inline:16px}.hero-section .hero-text-block{padding:22px 18px}}
+
+.certificate-original{display:block;width:max-content;margin:12px auto;color:#fff;font-size:15px;text-underline-offset:4px;min-height:44px;padding:10px}
+
+.map-container{position:relative;background:#eaf1e6}
+.map-open-link{position:absolute;left:16px;bottom:16px;z-index:1;padding:12px 18px;background:#fff;color:#165d30;border:1px solid #dce8d8;border-radius:12px;box-shadow:0 4px 18px #153a2512;text-decoration:none;font-size:14px;font-weight:700}
+@media(max-width:768px){
+ .hero-section .hero-text-block{display:flex;flex-direction:column}
+ .hero-main-title{order:1}
+ .hero-main-desc{order:2}
+ .hero-actions{order:3}
+ .hero-section .hero-detail{order:4;margin-top:20px;font-size:14px;color:#cad8c6}
+}
+
+#imgModal .modal-nav{background:#163b27e6;color:#fff;border:1px solid #ffffff50;border-radius:50%;width:44px;height:44px;padding:5px;font-size:25px;display:grid;place-items:center}

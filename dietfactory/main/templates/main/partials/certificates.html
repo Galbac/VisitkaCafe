@@ -13,7 +13,7 @@
         <div class="cert-list">
             {% for cert in certificates %}
             <div class="cert-item">
-                <div class="cert-image-wrapper">
+                <div class="cert-image-wrapper" role="button" tabindex="0" aria-label="Открыть сертификат {{ cert.name }}">
                     {% if cert.image %}
                     <img src="{{ cert.image.url }}" alt="{{ cert.name }}" class="cert-img">
                     {% else %}
@@ -26,6 +26,7 @@
                         <span class="cert-overlay-icon">🔍</span>
                     </div>
                 </div>
+                <button type="button" class="cert-view-button">Открыть сертификат <span aria-hidden="true">↗</span></button>
                 <h3 class="cert-name">{{ cert.name }}</h3>
                 <p class="cert-desc">{{ cert.description }}</p>
             </div>
@@ -41,13 +42,14 @@
 </section>
 
 <!-- Модальное окно для увеличенного изображения -->
-<div id="imgModal" class="modal">
+<div id="imgModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalCaption" aria-hidden="true">
     <div class="modal-content">
-        <span class="modal-close">&times;</span>
+        <button type="button" class="modal-close" aria-label="Закрыть сертификат">&times;</button>
         <button class="modal-nav modal-prev" aria-label="Предыдущее изображение">&#10094;</button>
         <img class="modal-img" id="modalImg" src="" alt="">
         <button class="modal-nav modal-next" aria-label="Следующее изображение">&#10095;</button>
         <div class="modal-caption" id="modalCaption"></div>
+        <a id="certificateOriginal" class="certificate-original" target="_blank" rel="noopener noreferrer">Открыть оригинал ↗</a>
     </div>
 </div>
 {% else %}

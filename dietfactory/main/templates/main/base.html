@@ -12,7 +12,6 @@
     <!-- Подключение основных стилей -->
     <link href="{% static 'assets/css/header.css' %}" rel="stylesheet">
     <link href="{% static 'assets/css/footer.css' %}" rel="stylesheet">
-    <link href="{% static 'assets/css/mobile.css' %}" rel="stylesheet">
 
     <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
     <link href="{% static 'assets/css/index.css' %}" rel="stylesheet">
@@ -36,6 +35,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Еда без вреда">
     {% block extra_css %}{% endblock %}
+    <link href="{% static 'assets/css/mobile.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/css/responsive.css' %}" rel="stylesheet">
 </head>
 <body>
 {% include 'main/partials/header.html' %}
@@ -71,44 +72,6 @@
 <script src="{% static 'assets/js/index.js' %}"></script>
 <!-- Блок для дополнительных скриптов на отдельных страницах -->
 {% block extra_js %}{% endblock %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const mobileToggle = document.querySelector('.mobile-menu-toggle');
-        const mainNav = document.querySelector('.main-nav');
-
-        if (!mobileToggle || !mainNav) {
-            console.warn('Гамбургер или меню не найдены.');
-            return;
-        }
-
-        function toggleMenu(show) {
-            mobileToggle.setAttribute('aria-expanded', String(show));
-            mobileToggle.classList.toggle('open', show);
-            mainNav.classList.toggle('show', show);
-            document.body.classList.toggle('menu-open', show);
-        }
-
-        mobileToggle.addEventListener('click', function () {
-            const isExpanded = this.getAttribute('aria-expanded') === 'true';
-            toggleMenu(!isExpanded);
-        });
-
-        // Закрытие меню при клике вне его
-        document.addEventListener('click', function (e) {
-            if (!mobileToggle.contains(e.target) && !mainNav.contains(e.target)) {
-                if (mainNav.classList.contains('show')) {
-                    toggleMenu(false);
-                }
-            }
-        });
-
-        // Закрытие по клавише Escape
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && mainNav.classList.contains('show')) {
-                toggleMenu(false);
-            }
-        });
-    });
-</script>
+<script src="{% static 'assets/js/navigation.js' %}" defer></script>
 </body>
 </html>

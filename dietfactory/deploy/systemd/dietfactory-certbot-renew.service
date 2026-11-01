@@ -1,0 +1,10 @@
+[Unit]
+Description=Renew Dietfactory TLS certificates and reload nginx
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/dietfactory-renew-ssl
+TimeoutStartSec=30min

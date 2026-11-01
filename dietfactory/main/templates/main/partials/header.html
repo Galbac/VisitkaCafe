@@ -1,58 +1,37 @@
 {% load static %}
 <header class="site-header" id="site-header">
     <div class="container header-flex">
-        <!-- Логотип -->
         <a href="{% url 'home' %}" class="logo-block" aria-label="Главная — Еда без вреда">
-            <img src="{% static 'assets/img/logo.svg' %}" alt="Логотип бренда 'Еда без вреда'" class="logo-img">
+            <img src="{% static 'assets/img/logo.svg' %}" alt="" class="logo-img" width="48" height="48">
             <span class="logo-title">Еда без вреда</span>
         </a>
-
-        <!-- Гамбургер-меню -->
-        <button class="mobile-menu-toggle" aria-label="Открыть меню" aria-expanded="false"
-                aria-controls="main-navigation">
-            <span></span>
-            <span></span>
-            <span></span>
+        <button type="button" class="mobile-menu-toggle" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-navigation">
+            <svg class="menu-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span class="menu-label">Меню</span>
         </button>
-
-        <!-- Навигация -->
-
-        <nav class="main-nav" id="main-navigation" role="navigation" aria-label="Основная навигация">
+        <nav class="main-nav" id="main-navigation" aria-label="Основная навигация">
+            <p class="menu-heading">Всё о нашей продукции</p>
             <ul class="nav-list">
-                <li style="--i:1"><a href="{% url 'products' %}">Продукты</a></li>
-                <li style="--i:2"><a href="{% url 'certifications' %}">Сертификаты</a></li>
-                <li style="--i:3"><a href="{% url 'reviews_list' %}">Отзывы</a></li>
+                <li><a href="{% url 'products' %}" {% if request.resolver_match.url_name == 'products' %}aria-current="page"{% endif %}>Продукты и заказ <span class="nav-arrow" aria-hidden="true">↗</span></a></li>
+                <li><a href="{% url 'certifications' %}" {% if request.resolver_match.url_name == 'certifications' %}aria-current="page"{% endif %}>Сертификаты <span class="nav-arrow" aria-hidden="true">↗</span></a></li>
+                <li><a href="{% url 'reviews_list' %}" {% if request.resolver_match.url_name == 'reviews_list' %}aria-current="page"{% endif %}>Отзывы <span class="nav-arrow" aria-hidden="true">↗</span></a></li>
+                <li class="nav-mobile-only"><a href="{% url 'home' %}#contacts">Контакты <span aria-hidden="true">↗</span></a></li>
             </ul>
+            <form class="menu-search nav-mobile-only" action="{% url 'search' %}" method="get" role="search">
+                <label for="mobile-product-search">Найти продукт</label>
+                <div><input id="mobile-product-search" type="search" name="query" maxlength="200" placeholder="Например, пельмени"><button type="submit" aria-label="Найти продукт">Найти</button></div>
+            </form>
+            <a class="menu-whatsapp nav-mobile-only" href="https://wa.me/79634001323" target="_blank" rel="noopener noreferrer">Написать в WhatsApp ↗</a>
         </nav>
-
-        <!-- Поиск -->
         <form class="header-search" action="{% url 'search' %}" method="get" role="search">
-            <input
-                    type="search"
-                    name="query"
-                    placeholder="Поиск продуктов..."
-                    aria-label="Поиск по сайту"
-                    autocomplete="off"
-            >
-            <button type="submit" aria-label="Выполнить поиск">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round">
-                    <circle cx="9" cy="9" r="7"/>
-                    <line x1="16" y1="16" x2="13.5" y2="13.5"/>
-                </svg>
-            </button>
+            <input type="search" name="query" maxlength="200" placeholder="Поиск продуктов…" aria-label="Поиск по сайту">
+            <button type="submit" aria-label="Выполнить поиск"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg></button>
         </form>
-
-        <!-- Instagram -->
-        <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" rel="noopener" class="header-insta"
-           aria-label="Мы в Instagram">
-            <svg class="insta-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e1306c"
-                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="20" rx="5"/>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                <circle cx="17.5" cy="6.5" r="1.5"/>
-            </svg>
-            <span class="insta-text">Instagram</span>
-        </a>
+        <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" rel="noopener noreferrer" class="header-insta" aria-describedby="instagram-notice">Instagram*</a>
     </div>
+    <nav class="mobile-quick-nav" aria-label="Быстрый переход">
+        <a href="{% url 'products' %}" {% if request.resolver_match.url_name == 'products' %}aria-current="page"{% endif %}>Продукция</a>
+        <a href="{% url 'certifications' %}" {% if request.resolver_match.url_name == 'certifications' %}aria-current="page"{% endif %}>Сертификаты</a>
+        <a href="{% url 'reviews_list' %}" {% if request.resolver_match.url_name == 'reviews_list' %}aria-current="page"{% endif %}>Отзывы</a>
+    </nav>
 </header>

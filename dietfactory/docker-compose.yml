@@ -62,20 +62,22 @@ services:
       - web
     networks:
       - db_network
-    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
 
   certbot:
-    profiles: ["production"]
+    profiles: ["maintenance"]
     image: dietfactory-certbot
     build:
       context: .
       dockerfile: docker/certbot.Dockerfile
     container_name: business_certbot
-    restart: always
+    restart: "no"
     volumes:
       - /etc/letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done;'"
+      - certbot_logs:/var/log/letsencrypt
+      - certbot_work:/var/lib/letsencrypt
+    entrypoint: ["certbot"]
+    command: ["renew", "--webroot", "-w", "/var/www/certbot", "--non-interactive"]
 
   adminer:
     profiles: ["tools"]
@@ -94,6 +96,8 @@ volumes:
   static_volume:
   postgres_data:
   certbot_www:
+  certbot_logs:
+  certbot_work:
 
 networks:
   db_network:

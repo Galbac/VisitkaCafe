@@ -171,3 +171,9 @@ if not DEBUG:
         raise ImproperlyConfigured('Set a strong SECRET_KEY (at least 50 characters).')
     if '*' in ALLOWED_HOSTS or not ALLOWED_HOSTS:
         raise ImproperlyConfigured('Set explicit ALLOWED_HOSTS for production.')
+
+# Fingerprinted filenames prevent stale CSS/JS under nginx immutable caching.
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'},
+}

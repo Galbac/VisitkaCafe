@@ -21,16 +21,16 @@ docker compose -f docker-compose.yml -f compose.override.yaml up -d adminer
 Существующие каталоги данных нужно один раз передать пользователю приложения (UID/GID 1000). Перед изменением прав сделайте резервную копию:
 
 ```sh
-docker compose -f docker-compose.yml --profile production --profile tools build --pull
-docker compose -f docker-compose.yml run --rm --no-deps --user root --entrypoint sh web -c 'chown -R 1000:1000 /app/media /app/staticfiles'
+docker compose -f docker-compose.yml --profile maintenance --profile tools build --pull
+docker compose -f docker-compose.yml run --rm --no-deps --user root --cap-add CHOWN --entrypoint sh web -c 'chown -R 1000:1000 /app/media /app/staticfiles'
 docker compose -f docker-compose.yml run --rm web python manage.py migrate --noinput
 docker compose -f docker-compose.yml run --rm web python manage.py collectstatic --noinput
-docker compose -f docker-compose.yml --profile production up -d
+docker compose -f docker-compose.yml --profile maintenance up -d
 docker compose -f docker-compose.yml exec -T web python manage.py check --deploy
 docker compose -f docker-compose.yml exec -T web python manage.py audit_uploads
 ```
 
-Рабочие сертификаты должны уже существовать в `/etc/letsencrypt/live/bezvreda05.ru/`; Certbot в Compose обновляет существующие сертификаты. Первичную выдачу выполняют на сервере, где DNS указывает на него и доступен порт 80. Не применяйте локальный HTTP override на публичном сервере.
+Рабочие сертификаты должны уже существовать в `/etc/letsencrypt/live/bezvreda05.ru/`; Certbot запускается по host systemd timer; настройка и dry-run описаны в DEPLOYMENT.md. Первичную выдачу выполняют на сервере, где DNS указывает на него и доступен порт 80. Не применяйте локальный HTTP override на публичном сервере.
 
 `check --deploy` может предупреждать о выключенных HSTS preload и includeSubDomains: они намеренно не включены без проверки всех поддоменов и готовности к долгосрочной HTTPS-политике.
 

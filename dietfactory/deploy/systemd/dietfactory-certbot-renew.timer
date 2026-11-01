@@ -1,0 +1,10 @@
+[Unit]
+Description=Check Dietfactory TLS certificates twice daily
+
+[Timer]
+OnCalendar=*-*-* 01,13:00:00
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

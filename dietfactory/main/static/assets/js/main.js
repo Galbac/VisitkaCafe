@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (target) {
                     e.preventDefault();
-                    const headerHeight = document.querySelector('.header').offsetHeight;
+                    const headerHeight = (document.querySelector('.site-header')?.offsetHeight || 0);
                     const targetPosition = target.offsetTop - headerHeight;
 
                     window.scrollTo({
@@ -121,24 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         });
-    });
-
-    // Header scroll effect
-    const header = document.querySelector('.header');
-    let lastScrollTop = 0;
-
-    window.addEventListener('scroll', function () {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-        if (scrollTop > lastScrollTop && scrollTop > 100) {
-            // Scrolling down
-            header.style.transform = 'translateY(-100%)';
-        } else {
-            // Scrolling up
-            header.style.transform = 'translateY(0)';
-        }
-
-        lastScrollTop = scrollTop;
     });
 
     // Add loading animation for search

@@ -1,7 +1,7 @@
 <footer class="site-footer">
     <div class="container footer-flex">
         <div class="footer-info">
-            <p>&copy; 2025 Еда без вреда</p>
+            <p>&copy; {% now "Y" %} Еда без вреда</p>
             <div class="footer-legal-links" style="margin-top: 6px; font-size: 0.85rem;">
                 <a href="{% url 'privacy' %}" style="color: #95a5a6; text-decoration: none; margin-right: 12px;">Политика конфиденциальности</a>
                 <a href="{% url 'terms' %}" style="color: #95a5a6; text-decoration: none;">Условия использования</a>
@@ -17,7 +17,7 @@
                 <span>Почта</span>
             </a>
 
-            <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" aria-label="Instagram"
+            <a href="https://www.instagram.com/eda__bez.vreda" target="_blank" aria-label="Instagram, доступ ограничен в РФ" aria-describedby="instagram-notice"
                class="footer-link instagram">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round">
@@ -25,7 +25,7 @@
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                     <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/>
                 </svg>
-                <span>Instagram</span>
+                <span>Instagram*</span>
             </a>
 
             <a href="https://wa.me/79634001323" target="_blank" aria-label="WhatsApp" class="footer-link whatsapp">
@@ -38,4 +38,5 @@
             </a>
         </div>
     </div>
+    <p class="container instagram-notice" id="instagram-notice">* Instagram — социальная сеть, запрещённая в РФ. Принадлежит Meta Platforms Inc., деятельность которой признана экстремистской и запрещена в РФ.</p>
 </footer>

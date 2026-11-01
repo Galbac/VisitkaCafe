@@ -1,0 +1,44 @@
+[
+  {
+    "width": 320,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  },
+  {
+    "width": 375,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  },
+  {
+    "width": 390,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  },
+  {
+    "width": 440,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  },
+  {
+    "width": 768,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  },
+  {
+    "width": 1024,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "overflow": false,
+    "buttonColor": "rgb(255, 255, 255)",
+    "errors": []
+  }
+]
