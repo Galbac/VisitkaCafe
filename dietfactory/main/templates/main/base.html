@@ -40,6 +40,9 @@
 </head>
 <body>
 {% include 'main/partials/header.html' %}
+{% if demo_catalog_active %}
+<div class="demo-content-notice" role="note"><strong>Демо-витрина.</strong> Товары, состав, пищевая ценность и отзывы размещены для примера. Тестовые позиции не являются предложением к продаже.</div>
+{% endif %}
 
 {% if messages %}
 <div class="messages-container" style="position: fixed; top: 85px; right: 20px; z-index: 99999; max-width: 420px; display: flex; flex-direction: column; gap: 10px;">
